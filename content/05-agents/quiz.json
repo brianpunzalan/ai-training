@@ -11,7 +11,9 @@
           "Planner + executor + critic + memory bank",
           "Embeddings + retrieval + generation + citations"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "An agent is a model that directs its own control flow toward a goal, equipped with tools to act, run inside a loop, with state accumulating across iterations. Remove the self-directed loop and you have a workflow — predefined code paths over LLM calls."
       },
       {
@@ -24,7 +26,9 @@
           "Agents are always cheaper to run",
           "Workflows can't call tools"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Prompt chaining, routing, parallelization, orchestrator-workers, and evaluator-optimizer are workflows: the control flow is yours. An agent hands the model the steering wheel. Most production systems are workflows — and should be."
       },
       {
@@ -37,7 +41,9 @@
           "When latency matters more than accuracy",
           "When you want deterministic, auditable behavior"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Agency buys flexibility for tasks whose steps are unknowable upfront, and costs you compounding errors, growing context cost, harder debugging, and larger blast radius. If the path is predictable, encode it as a workflow and keep the determinism."
       },
       {
@@ -50,7 +56,11 @@
           "Debugging gets harder than for fixed pipelines",
           "Agents cannot use more than three tools"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Each self-directed step can go slightly wrong, and the errors multiply; the transcript grows every iteration and is re-read each time; and nondeterministic paths are harder to debug than flowcharts. Tool count is a design question, not a hard limit — hybrids (bounded agents inside workflows) are normal."
       }
     ]
@@ -67,7 +77,9 @@
           "Re-running failed actions automatically",
           "A frontend framework for agent UIs"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "ReAct alternates reasoning about what to do next, taking an action (tool call), and observing the result. Modern tool-calling APIs implement it natively. It's the default for exploratory work — with a known tendency to rabbit-hole without global structure."
       },
       {
@@ -80,7 +92,9 @@
           "It uses fewer tokens in all cases",
           "It removes the need for tools"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Producing a plan first gives you something to review (approval gates), parallelize, and track progress against. The weakness is staleness: plans meet reality, so production planners must re-plan when steps fail or reveal new information."
       },
       {
@@ -93,7 +107,9 @@
           "Only with models above 100B parameters",
           "Only when the critic is the same model instance as the generator"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "An unanchored 'is this good?' self-check mostly produces agreement. Reflection earns its cost when there's an objective signal — failing tests, schema validation, a rubric — that makes the critique informative. Verify-easier-than-generate is the test to apply."
       },
       {
@@ -106,7 +122,11 @@
           "Use it as the sole replacement for all planning structure",
           "Recognize it moves deliberation inside the model"
         ],
-        "answer": [0, 1, 3],
+        "answer": [
+          0,
+          1,
+          3
+        ],
         "explanation": "Extended thinking gives the model internal deliberation room, and thinking budgets should match task difficulty. But it complements rather than replaces external structure — approval gates and parallel execution still need an explicit plan outside the model's head."
       }
     ]
@@ -123,7 +143,9 @@
           "The provider's session storage between API calls",
           "The model's weights updated during the run"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Models are stateless between calls (Module 1); whatever 'memory' an agent has is whatever the harness places in the context window this iteration. Every memory technique — compaction, files, retrieval — is a strategy for choosing those tokens."
       },
       {
@@ -136,7 +158,9 @@
           "Switching to a model with a larger context window",
           "Storing every message in a vector database"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Most context bloat is self-inflicted: oversized tool outputs re-read every iteration. Truncating at the source and dropping stale results is cheap and often sufficient — reach for compaction and external memory only when hygiene isn't enough."
       },
       {
@@ -149,7 +173,11 @@
           "Rewriting the transcript invalidates prompt caches",
           "It's lossless if the summary is long enough"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Compaction is lossy by design — details not captured by the summary are gone, so the summarization prompt is load-bearing. And because the prompt prefix changes, cached prefixes (Module 8) miss afterward. No summary length makes it lossless."
       },
       {
@@ -162,7 +190,9 @@
           "They eliminate context limits entirely",
           "They're automatically maintained by the API"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A scratchpad or notes file survives transcript rewrites and session restarts, and humans can inspect it. The catch: models don't spontaneously maintain files — the harness must instruct when and what to record. Retrieval-backed memory extends the same idea across sessions using Module 4's machinery."
       }
     ]
@@ -179,7 +209,9 @@
           "A fixed number of steps configured upfront",
           "The user approving each iteration"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The loop calls the model with tools; if stop_reason is tool_use it executes the requested tools, appends tool_result blocks, and repeats. When the model answers without requesting tools (end_turn), the task is done. Everything else in agent engineering is refinement around this."
       },
       {
@@ -192,7 +224,9 @@
           "Silently skip the tool call and continue",
           "Restart the entire loop from the first message"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Errors returned as tool results give the model a recovery opportunity — this single pattern accounts for a surprising share of agent robustness. Crashing wastes the run; silent skipping produces answers built on missing data."
       },
       {
@@ -205,7 +239,11 @@
           "No-progress detection (same tool, same args, repeatedly)",
           "Trusting the model alone to always terminate"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "A loop whose only exit is 'the model decides it's done' eventually spins. Iteration caps, cost budgets, timeouts, and repeated-call detection are independent guards — and hitting one should return the partial work and transcript, not vaporize it."
       },
       {
@@ -218,7 +256,9 @@
           "No gates — the system prompt's rules are sufficient",
           "Randomly sample 10% of calls for review"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Gating everything makes the agent useless; gating nothing makes it dangerous. Classify by consequence: searches auto-run, file creation logs, deletes/sends/deploys pause the loop for approval. The gate is just an if-statement before execute() — the model proposes, the harness disposes."
       }
     ]
@@ -235,7 +275,9 @@
           "The GPU cluster serving the model",
           "A testing framework for prompts"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The same model behind two products performs wildly differently — the difference is the harness. You can't change the weights, but you own every harness lever, and harness changes move agent quality as much as model upgrades do."
       },
       {
@@ -248,7 +290,9 @@
           "APIs reject requests with more than 20 tools",
           "Fewer tools make the loop run fewer iterations"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Tool schemas enter the context, and the model must choose among them. Ten well-named tools with crisp when-to-use descriptions outperform forty vague ones. Tools should also sit at the right altitude — one model intention per call — with error messages designed to be read by the model."
       },
       {
@@ -261,7 +305,9 @@
           "Sandboxes replace the need for permissions",
           "Permissions only matter for multi-agent systems"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A prompt rule can be ignored or injected around; a permission system enforces what the agent may do; a sandbox bounds what it can do even when confused or compromised. Defense in depth with least privilege as the default is the harness engineer's posture."
       },
       {
@@ -274,7 +320,11 @@
           "Tightly scoped permissions (e.g., read-only research)",
           "Free execution — subagent tokens aren't billed"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Subagents are fresh contexts with narrow tasks and restricted tools: they isolate context pollution, run in parallel, and can be permission-scoped. The costs are real, though — coordination overhead, information loss at the boundary, and every subagent token is paid for."
       }
     ]
@@ -291,7 +341,9 @@
           "The context window limit",
           "Model hallucination on factual questions"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "Before MCP, N applications × M data sources meant every cell hand-built. MCP standardizes the protocol between AI applications (clients) and integrations (servers) — like LSP did for editors — collapsing the grid to N + M."
       },
       {
@@ -304,7 +356,9 @@
           "Tools — functions the model decides to call",
           "Transports — how client and server communicate"
         ],
-        "answer": [2],
+        "answer": [
+          2
+        ],
         "explanation": "Tools are model-controlled (the model chooses to call them), resources are application-controlled, and prompts are user-controlled. Tools are the workhorse — they're Module 3's tool calling, standardized over JSON-RPC."
       },
       {
@@ -317,7 +371,9 @@
           "They're identical in capability and deployment",
           "HTTP is deprecated in favor of stdio"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A local server runs as a child process speaking JSON-RPC over stdio — zero network setup, local credentials. Remote servers speak streamable HTTP with OAuth so one deployment serves many users. The model never sees any of this; MCP is harness plumbing."
       },
       {
@@ -330,7 +386,11 @@
           "Server credentials should be scoped to least privilege",
           "MCP servers are sandboxed by the protocol, so vetting is unnecessary"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Connect what the task needs, not everything you have — schemas cost context. And a server is code running with real credentials whose outputs are untrusted input to your model (Module 8): vet it like any dependency and keep approval gates on consequential actions. The protocol itself provides no sandbox."
       }
     ]
@@ -347,7 +407,9 @@
           "A ring topology where every agent talks to every other",
           "Two identical agents checking each other's work"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Orchestrator–workers dominates because it captures the two real benefits — context isolation (the lead pays for summaries, not transcripts) and parallelism — with manageable coordination. Anthropic's research system is the canonical example: ~90% quality gain on research evals for ~15× tokens."
       },
       {
@@ -360,7 +422,9 @@
           "Any task involving more than three steps",
           "Low-latency interactive chat"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Workers earn their cost through isolation and parallelism, which pay off when subtasks are independent and read-heavy. Write-heavy coupled work produces conflicts and contradictions — agents don't coordinate unless you build the coordination."
       },
       {
@@ -373,7 +437,11 @@
           "Write conflicts between agents editing the same artifacts",
           "Workers automatically share each other's context windows"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Errors compound across agents and propagate through summaries that strip caveats; under-specified briefs are the #1 practical failure; and concurrent writers conflict. Workers do NOT share context — that isolation is the feature, and the cost."
       },
       {
@@ -386,8 +454,106 @@
           "Always use whichever architecture the newest paper proposes",
           "Choose based on team size rather than task shape"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Each rung adds cost, latency, and failure modes. Climb only when evals (Module 7) show the simpler design failing — if one agent with a clean context can do it, that's also the cheapest option. Architecture diagrams aren't evidence."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "What single mechanical fact makes context management the central agent engineering problem?",
+        "options": [
+          "Models stream output token by token",
+          "The model re-reads the entire growing transcript every iteration — every appended token is paid again on every later step",
+          "Tools run sequentially",
+          "System prompts are limited to 4KB"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "The loop appends and re-sends. Oversized tool outputs, stale results, and unpruned history tax every remaining iteration — hence trimming, compaction, and subagents."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "You can draw the complete flowchart for a task. What does this module say to build?",
+        "options": [
+          "An autonomous agent with extended thinking",
+          "A workflow — code the flowchart; agency is for step sequences unknowable in advance",
+          "A multi-agent committee",
+          "An MCP server"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Agency costs compounding errors, cost, and debuggability. If the path is predictable, predefined code paths over LLM calls keep determinism."
+      },
+      {
+        "id": "r3",
+        "type": "multi",
+        "prompt": "Which are structural (not textual) safety layers in a harness? (Select all that apply.)",
+        "options": [
+          "Permission systems with least-privilege tool grants",
+          "Sandboxes bounding filesystem/network access",
+          "Approval gates pausing destructive actions",
+          "A system prompt rule saying 'never delete files'"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Prompt rules are suggestions; permissions are policy; sandboxes are physics. The structural layers hold even when the model is confused or injected."
+      },
+      {
+        "id": "r4",
+        "type": "single",
+        "prompt": "A research task needs forty file reads whose details would drown the main agent's context. Which harness feature fits?",
+        "options": [
+          "Raise max_tokens",
+          "A subagent: isolated context, narrow brief, read-only tools, returning only a distilled summary",
+          "Compaction after every read",
+          "A bigger model"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Subagents convert context pollution into a one-paragraph result, parallelize, and scope permissions — the building block of orchestrator–workers."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "Your agent gets a tools/list response from a newly connected MCP server. What should you have already considered?",
+        "options": [
+          "Nothing — MCP servers are sandboxed by the protocol",
+          "That its schemas now consume context, its credentials should be least-privilege, and its tool results are untrusted input",
+          "That stdio transport encrypts traffic",
+          "That the model now knows MCP exists"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Servers are vetted dependencies with real credentials whose outputs can carry injected instructions. Connect selectively; keep approval gates regardless of which server requests an action."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "Anthropic's multi-agent research system improved research evals ~90% — at what cost, and what does that imply?",
+        "options": [
+          "No cost — multi-agent is strictly better",
+          "~15× the tokens of a single chat turn — so climb the single-call → workflow → agent → multi-agent ladder only on measured evidence",
+          "Double latency only",
+          "It required fine-tuning"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Parallel isolated workers buy quality on read-heavy research at a steep token premium. Each architecture rung must be earned by a measured failure of the simpler one."
       }
     ]
   }

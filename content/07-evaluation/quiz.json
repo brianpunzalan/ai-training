@@ -11,7 +11,9 @@
           "They eliminate the need for human review",
           "They guarantee the product never regresses"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The model you use today will be replaced; the prompt will be rewritten. What compounds is the ability to measure whether any change helped — that's what lets you adopt better models in days while competitors re-vibe-check for months."
       },
       {
@@ -24,7 +26,9 @@
           "Defining a 1–10 quality scale",
           "Hiring a data labeling vendor"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "Metrics chosen before looking at data measure what you imagined, not what's failing. Reading real traces and clustering failures tells you what's actually worth measuring — then metrics follow from observed failure modes."
       },
       {
@@ -37,7 +41,9 @@
           "The cost of the run",
           "A pass/fail badge for the README"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The aggregate tells you whether things changed; the failure list tells you what to do next. Reading failures is how evals drive development rather than just grading it — vibe checks only ever test the happy paths you remembered."
       },
       {
@@ -50,7 +56,11 @@
           "Sampled human review to calibrate both",
           "A single end-to-end accuracy number that replaces the other layers"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "The layers are complementary: rules are fast and consistent, judges cover fuzzy criteria at scale, and humans keep both honest. A single aggregate number localizes nothing and hides compensating failures."
       }
     ]
@@ -67,7 +77,9 @@
           "A set of outputs the model produced on a good day",
           "The provider's built-in benchmark"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Golden sets are yardsticks: fixed inputs with expectations (answers, checklists, or labels), versioned in git, so today's 84% and next week's 86% are measured on the same ruler. Frozen doesn't mean static — it grows through controlled additions."
       },
       {
@@ -80,7 +92,9 @@
           "Public benchmark datasets only",
           "Cases written exclusively by the engineering team"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Real queries capture the distribution you actually face, and production failures are the highest-value cases. Synthetic cases fill coverage gaps (edge cases, adversarial inputs) but need human review — and every new production failure becomes a permanent case."
       },
       {
@@ -93,7 +107,11 @@
           "Decomposed binary labels rather than holistic 1–10 scores",
           "Letting each labeler invent their own criteria for flexibility"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Label quality caps eval quality. Guidelines plus agreement measurement catch ambiguity, and binary decomposed criteria ('grounded: yes/no') are far more consistent and actionable than holistic scores. Per-labeler improvisation guarantees noise."
       },
       {
@@ -106,7 +124,9 @@
           "Providers charge more for contaminated datasets",
           "Contamination only matters for public benchmarks"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "An eval case the system has effectively seen (as a few-shot example, or in fine-tuning data — Module 6) scores artificially well. Keep held-out slices, draw few-shot examples from a separate pool, and treat public benchmarks with the same skepticism."
       }
     ]
@@ -123,7 +143,9 @@
           "Alternate between them per test case",
           "Use whichever the team knows better"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Rules are free, instant, perfectly consistent, and runnable on every commit; judges are none of those. Teams typically find 60–80% of what they care about — formats, presence, schemas, executable behavior — was rule-checkable all along."
       },
       {
@@ -136,7 +158,9 @@
           "Regex-matching the syntax",
           "Counting lines of code"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Where output is runnable, run it — correctness by behavior beats correctness by appearance. This is how coding benchmarks like HumanEval score, and a fixture database makes it work for SQL."
       },
       {
@@ -149,7 +173,9 @@
           "Decomposition makes the judge unnecessary forever",
           "Holistic judgments are forbidden by best practice"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "'No citation' or 'over 3 sentences' is actionable; a holistic score isn't. Decomposition converts most of 'good' into cheap, diagnostic checks — and the genuine residue (reasoning soundness, relative helpfulness) is what the judge is for."
       },
       {
@@ -162,7 +188,11 @@
           "Rules verifying necessary conditions but rarely sufficient ones",
           "Rules exhibiting position bias like LLM judges"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Brittleness wants aggressive normalization (and promoting chronic false-alarmers to the judge); Goodharting is why rules can't be the whole stack — perfect citations to irrelevant docs pass the regex. Position bias is a judge pathology; determinism is precisely what rules don't suffer from."
       }
     ]
@@ -179,7 +209,9 @@
           "No rubric, so the judge can apply its own standards",
           "Verdict first, then explanation, to save tokens"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Binary named criteria are more consistent and actionable than scales; reasoning-before-verdict applies Module 2's CoT ordering; borderline examples calibrate the boundary; and the escape hatch handles malformed outputs. Structured output makes verdicts parse mechanically."
       },
       {
@@ -192,7 +224,9 @@
           "Whenever the eval set is small",
           "Pairwise is always preferable in every situation"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "'Is this 6 or 7 out of 10?' is noise; 'is A or B more helpful?' is signal. Pairwise fits comparison decisions (with ties allowed); pointwise remains right for absolute monitoring and crisp criteria like groundedness."
       },
       {
@@ -205,7 +239,11 @@
           "Self-preference — judge with a different model family than the one being judged",
           "Recency bias — judges only remember the last 100 tokens of an answer"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Position, verbosity, and self-preference biases are systematic, not random — position bias alone can swing pairwise results by double digits, more than most changes you're measuring. The fourth option misdescribes how models process context."
       },
       {
@@ -218,7 +256,9 @@
           "Check that its scores are stable across runs",
           "Verify the judge never gives failing verdicts"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A judge is a measurement instrument; uncalibrated, it produces confident wrong conclusions. Target agreement near human-human levels, report per-criterion (judges are stronger on groundedness than 'helpfulness'), version the calibration set, and re-validate on judge changes."
       }
     ]
@@ -235,7 +275,9 @@
           "How many requests per second are we serving?",
           "Which server handled the request?"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "An LLM app can be up, fast, and error-free while giving wrong answers. Debugging needs the rendered prompt, versions, parameters, full response, tokens, and latency — the complete interaction, not a stack trace."
       },
       {
@@ -248,7 +290,9 @@
           "One trace per retrieved chunk",
           "Spans are only for agents, not RAG"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Multi-step systems need per-step visibility: the span structure is what lets you see at a glance whether retrieval fetched wrong chunks or generation botched good ones — Module 4's localization question, answered in production."
       },
       {
@@ -261,7 +305,9 @@
           "No evals in production — they're an offline activity",
           "Only manual review, since automation can't run in production"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Schema and citation checks are cheap enough for 100% of traffic; judges run on a sampled percentage for cost. Alerting on rate changes catches regressions in hours instead of waiting for user complaints."
       },
       {
@@ -274,7 +320,11 @@
           "Outliers: slowest, most expensive, most agent iterations",
           "Only traces that triggered exceptions"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Random sampling shows the typical experience, thumbs-downs are labeled failures, and outliers surface systemic issues. Exception-only review misses the defining LLM failure mode: confidently wrong answers that throw no errors. Reviewed failures then feed golden sets, checks, and rubrics."
       }
     ]
@@ -291,7 +341,9 @@
           "Because CI providers require it",
           "They don't — prompts are too subjective to test"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The classic incident: a tweak fixes one complaint and silently drops citations elsewhere; nothing crashes, so nothing alerts. Treating prompts as behavior-defining source code — eval run plus merge-blocking gate on quality drops — prevents exactly this."
       },
       {
@@ -304,7 +356,9 @@
           "Block it until the developer explains the drop",
           "Re-run until it scores above baseline"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "LLM evals are noisy even at temperature 0. Measure the noise floor by running the suite repeatedly against main, then gate on drops beyond it. Any-drop gates block innocent PRs until the team disables the gate entirely."
       },
       {
@@ -317,7 +371,11 @@
           "Trigger the expensive judged suite only on paths that affect behavior",
           "Run the full judge suite on every README edit for maximum safety"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Per-case diffs catch compensating failures a flat aggregate hides; non-negotiables get hard floors while statistical tolerance is reserved for fuzzy criteria; and path-scoping keeps the gate fast and cheap enough that nobody turns it off — which is what burning judge calls on README edits leads to."
       },
       {
@@ -330,8 +388,106 @@
           "They're only for infrastructure changes, not prompts",
           "They run the eval suite a second time"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "CI tests what you anticipated; production reveals the rest. Canarying a few percent of traffic with per-version metrics (requires per-request version logging — Module 2) gives evidence to promote or roll back, and every canary-caught failure becomes a permanent golden case."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "Assemble the module: golden set + programmatic checks + calibrated judge + tracing. What does each contribute to a CI regression gate?",
+        "options": [
+          "Test data + deterministic assertions + fuzzy-criteria scoring + production feedback into new cases",
+          "Four redundant copies of the same signal",
+          "Only the judge matters; the rest is overhead",
+          "Tracing replaces the need for the other three"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "The gate runs the golden set, scores with rules where possible and the judge for the residue, and tracing feeds production failures back into the set — the full flywheel."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "Why does error analysis precede metric selection?",
+        "options": [
+          "Metrics are expensive to compute",
+          "Metrics chosen before reading real traces measure what you imagined failing, not what actually fails",
+          "Regulators require error analysis first",
+          "Error analysis is faster than metrics"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Read 50–100 traces, cluster the failure modes, count them — then the metrics follow from observed reality. The failure list, not the aggregate, drives development."
+      },
+      {
+        "id": "r3",
+        "type": "single",
+        "prompt": "A pairwise judge shows the new prompt winning 58% of comparisons — but you ran each pair in only one order. What's the threat?",
+        "options": [
+          "Nothing; 58% is decisive",
+          "Position bias can swing pairwise results by double digits — run both orderings and count only consistent wins",
+          "Judges can't do pairwise at all",
+          "Ties were impossible"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Favoring whichever answer appears first (or last) is systematic, not random — often larger than the effect you're measuring. Order-swapping is non-negotiable."
+      },
+      {
+        "id": "r4",
+        "type": "multi",
+        "prompt": "Which gate behaviors respect the statistics of LLM evals? (Select all that apply.)",
+        "options": [
+          "Tolerance thresholds derived from measured run-to-run variance",
+          "Per-case status diffs, since aggregates hide compensating changes",
+          "Zero-tolerance floors only for deterministic non-negotiables",
+          "Blocking any PR whose score drops by 0.1%"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Scores wobble even unchanged; gate on drops beyond the noise floor, diff which cases flipped, and reserve hard floors for schema/PII/policy checks. Any-drop gates get disabled by annoyed teams."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "Production traces are flowing into your observability tool but nobody reads them. What does the module call this?",
+        "options": [
+          "Complete observability",
+          "Expensive storage — sampled human review is what converts traces into golden cases, checks, and rubric updates",
+          "A compliance win",
+          "Sufficient, as long as dashboards exist"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "The review session — random traces + thumbs-downs + outliers — is the institutionalized 'look at your data' that closes the flywheel. Unread traces improve nothing."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "A canary deploy surfaces a failure the CI gate missed. What's the final step the module prescribes?",
+        "options": [
+          "Disable the canary",
+          "Roll back and add the failure to the golden set so the gate never misses it again",
+          "Blame the judge",
+          "Increase the traffic percentage"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Production catches what golden sets didn't anticipate; feeding each catch back into the set is how the gate compounds — the eval suite grows where reality showed it was blind."
       }
     ]
   }

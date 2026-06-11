@@ -11,7 +11,9 @@
           "Open-weight versus proprietary models",
           "Latency versus throughput"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "RAG supplies current, attributable knowledge at request time; fine-tuning sculpts how the model behaves — style, format, domain dialect. They solve different problems and compose well: retrieve the facts, fine-tune the behavior."
       },
       {
@@ -24,7 +26,9 @@
           "Fine-tuning only affects the model's vocabulary",
           "Providers prohibit factual fine-tuning"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A few thousand examples are a rounding error against trillions of pre-training tokens, so new facts stick inconsistently. And unlike RAG, baked-in facts can't be updated without retraining or cited back to a source."
       },
       {
@@ -37,7 +41,11 @@
           "Getting frontier-quality results on a narrow task from a small, cheap, fast model",
           "Keeping the model current with this week's product changes"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Style, format, dialect, and narrow-task distillation into small models are fine-tuning's home turf — behavior, not facts. Freshness is RAG's job; weights go stale the day training ends."
       },
       {
@@ -50,7 +58,9 @@
           "RAG → fine-tune → prompt",
           "Whichever is cheapest this quarter"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Prompting is cheapest to try and reverse, RAG fixes knowledge gaps, and fine-tuning comes last — undertaken only with substantial quality data and an eval set built first, since without one you can't even tell whether the tune helped."
       }
     ]
@@ -67,7 +77,9 @@
           "Editing individual neurons that store target behaviors",
           "Prompt optimization via gradient-free search"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "SFT is the same next-token objective as pre-training, run on your curated examples — typically masking the loss so only assistant-response tokens teach. Small learning rates and few epochs sculpt behavior without rebuilding capability."
       },
       {
@@ -80,7 +92,9 @@
           "It requires the context window to be doubled",
           "Tokenizers expand during training"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Training needs weights plus gradients plus optimizer states (e.g., Adam's moments) — roughly 12–16 bytes per parameter, so an 8B model wants on the order of 100GB+. That's the memory wall LoRA exists to break."
       },
       {
@@ -93,7 +107,9 @@
           "It trains only the tokenizer embeddings",
           "It trains on a random 1% sample of the data"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "LoRA learns (alpha/r)·B·A low-rank updates beside frozen weights. Only the adapters need gradients and optimizer state. Typical knobs: r of 8–32, alpha ≈ r or 2r, targeting all attention + MLP linear layers — and adapters merge into the base for deployment."
       },
       {
@@ -106,7 +122,11 @@
           "Catastrophic forgetting is mitigated by low epochs, small learning rates, and regression evals",
           "QLoRA trains the base weights in 4-bit precision"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "QLoRA quantizes the frozen base to 4-bit NF4 while adapters train in higher precision — the base is stored, not trained, in 4-bit. That puts 8B fine-tunes in free-Colab territory at near-LoRA quality. Forgetting remains real: keep epochs low and run regression evals (Lesson 5)."
       }
     ]
@@ -123,7 +143,9 @@
           "The model's parameter count must match the dataset size",
           "Training replaces the model's vocabulary with the dataset's"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Fine-tuning imitates the training examples. Inconsistent formats produce inconsistent outputs; labeling errors become learned mistakes. That's why data work is half the project and 'read your data' is non-negotiable."
       },
       {
@@ -136,7 +158,9 @@
           "Fewer than ten examples is the optimum",
           "Quality only matters above one million examples"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Behavior is learnable from surprisingly few examples if they're consistent and correct. A small, expert-grade, format-consistent dataset routinely outperforms a 100× larger scrape with noise — which would teach the noise too."
       },
       {
@@ -149,7 +173,11 @@
           "One consistent format matching production inference",
           "Shuffling the eval set into training to maximize data volume"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Duplicates overweight their patterns, eval contamination makes every later measurement meaningless, and format mismatches between training and inference squander the tune. Mixing eval data into training is the cardinal sin — build and guard the eval set first."
       },
       {
@@ -162,7 +190,9 @@
           "Avoid synthetic data entirely; it never helps",
           "Use synthetic data only for the eval set"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Teacher-generated data is the standard way to reach scale, and distillation can bake an expensive mega-prompt into a small cheap model. But raw generations include errors and repetition — quality comes from aggressive filtering, and keeping real data in the mix avoids distribution collapse."
       }
     ]
@@ -179,7 +209,9 @@
           "System prompts are merged into the adapter file",
           "It only matters for models above 70B parameters"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "SFT teaches 'given this context, respond like this.' If training examples carry one persona and production uses another, the learned association never fires. Format consistency between training and inference is the same principle (Lesson 3)."
       },
       {
@@ -192,7 +224,9 @@
           "Warmup ratio and scheduler type",
           "Sequence length and gradient checkpointing"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Learning rate too high garbles output, too low changes nothing; epochs beyond 1–2 are the main memorization risk. LoRA r/alpha (16/32 starting points) come next; batch size mostly affects stability and is handled with gradient accumulation."
       },
       {
@@ -205,7 +239,9 @@
           "The learning rate is too low",
           "The eval set is too small to be meaningful"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Diverging curves are the classic overfitting signature: the model is fitting your specific examples rather than the generalizable behavior. Frequent eval steps exist precisely to catch this turn early — and even a healthy curve is only a proxy until behavioral evals pass."
       },
       {
@@ -218,7 +254,11 @@
           "One base model can host many adapters, enabling per-task or per-customer variants",
           "Adapters must be retrained for every inference request"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "LoRA's deployment story is its best feature: tiny swappable adapter files, merge-and-unload for zero-overhead serving, or multi-LoRA serving where one base hosts many variants. Training happens once; inference just applies the learned matrices."
       }
     ]
@@ -235,7 +275,9 @@
           "Eval loss only matters for full fine-tuning, not LoRA",
           "Shipping requires train loss to reach exactly zero"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A model can lower loss by nailing boilerplate while botching decisions that matter, and a tune can improve the target task while quietly degrading everything else. Behavioral evaluation on three axes — target task, regression, economics — is the verdict."
       },
       {
@@ -248,7 +290,9 @@
           "A random-answer baseline",
           "Last year's fine-tune"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The cheaper alternative on the escalation ladder is more prompt engineering, so comparing against a lazy zero-shot strawman proves nothing. Pairwise judging against the best-prompt baseline — with sides randomized for position bias — answers the real question."
       },
       {
@@ -261,7 +305,11 @@
           "Format compliance for formats other than the one trained",
           "Only the target-task eval set, run twice"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Catastrophic forgetting shows up off-target: a model tuned for three-sentence answers may answer everything that way or lose reasoning flexibility. The regression suite deliberately tests what you didn't train — plus safety behavior — comparing base vs tuned."
       },
       {
@@ -274,8 +322,106 @@
           "Ship it anyway since the training cost is sunk",
           "The eval set must be wrong"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Ship/iterate/abandon is an evidence-driven decision. Failing to beat the prompted baseline is a normal outcome that saves you the permanent operational drag of retraining cadences and serving infrastructure for no quality gain. Sunk training cost is not a shipping argument."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "A team wants to fine-tune so the model 'knows this week's product catalog'. What's the module's verdict?",
+        "options": [
+          "Good plan — facts belong in weights",
+          "Wrong tool: that's knowledge, which wants RAG; fine-tuning is for behavior — style, format, dialect",
+          "Only works with QLoRA",
+          "Correct if they use 10 epochs"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Small datasets can't reliably overwrite pre-training, weights go stale immediately, and attribution is lost. Retrieve the facts; tune the behavior."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "Why does QLoRA put an 8B fine-tune within free-Colab reach?",
+        "options": [
+          "It trains on fewer examples",
+          "Frozen base stored in 4-bit NF4 + low-rank adapters: only adapter params need gradients and optimizer state",
+          "It skips backpropagation",
+          "Colab provides free TPUs for QLoRA"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Full FT costs ~12–16 bytes/param for weights+gradients+optimizer; QLoRA shrinks the frozen base to 4-bit and trains <1% of params — under 10GB for 8B."
+      },
+      {
+        "id": "r3",
+        "type": "multi",
+        "prompt": "Which dataset sins would directly corrupt the resulting model or its evaluation? (Select all that apply.)",
+        "options": [
+          "Eval examples leaking into training data",
+          "Inconsistent response formats across examples",
+          "A training system prompt that differs from production's",
+          "Using only a few thousand examples"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Contamination invalidates every measurement; the model faithfully learns format inconsistency; and prompt mismatch trains behavior that never fires. Small-but-clean is fine — quality beats quantity."
+      },
+      {
+        "id": "r4",
+        "type": "single",
+        "prompt": "Eval loss looks great, but the tuned model answers every question — including general ones — in exactly three sentences. What happened, and which check catches it?",
+        "options": [
+          "Underfitting; raise the learning rate",
+          "Catastrophic forgetting/over-narrowing; the regression suite of non-target tasks catches it",
+          "Tokenizer corruption; re-download the model",
+          "Nothing is wrong"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Tuning hard on one behavior can bleed into everything. That's why evaluation axis two exists: general instruction-following, reasoning, and other-format checks comparing base vs tuned."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "What is the honest baseline a fine-tune must beat before shipping?",
+        "options": [
+          "The base model zero-shot with no system prompt",
+          "The base model with your best engineered prompt — the alternative you'd actually deploy",
+          "Random outputs",
+          "Last quarter's model"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "More prompt engineering is the cheaper rung on the escalation ladder. Pairwise-judge against it with sides randomized; losing to it means fine-tuning wasn't needed — a respectable result."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "Why are LoRA adapters operationally attractive at serving time?",
+        "options": [
+          "They make the base model smaller",
+          "Tens-of-MB swappable files: merge for zero-overhead serving, or host many adapters on one base for per-task variants",
+          "They remove the need for GPUs",
+          "They auto-update with new data"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Adapters merge into the base for drop-in vLLM/Ollama serving, or stay separate so one deployed base serves many fine-tuned behaviors cheaply."
       }
     ]
   }

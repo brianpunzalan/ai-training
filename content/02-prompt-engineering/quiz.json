@@ -11,7 +11,9 @@
           "Adding new factual knowledge the model didn't have",
           "Fine-tuning a temporary copy of the model for your session"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Examples in the prompt don't train anything — the weights are frozen. They condition generation, steering the model toward patterns and formats it already learned in pre-training. That's why examples are great for demonstrating format and policy but can't inject new knowledge."
       },
       {
@@ -24,7 +26,9 @@
           "Baseline the task zero-shot — modern instruction-tuned models often don't need examples",
           "Raise the temperature so the model explores more formats"
         ],
-        "answer": [2],
+        "answer": [
+          2
+        ],
         "explanation": "Modern instruction-tuned models handle many tasks well from instructions alone. Always measure zero-shot performance first; if it's already sufficient, examples just add token cost. Add examples when you need to demonstrate format, style, or edge-case policy."
       },
       {
@@ -37,7 +41,11 @@
           "Balancing labels so the model doesn't learn a majority-class bias",
           "Encoding examples as alternating user/assistant turns"
         ],
-        "answer": [0, 2, 3],
+        "answer": [
+          0,
+          2,
+          3
+        ],
         "explanation": "Boundary-defining examples, balanced labels, and alternating-turn encoding all measurably help. A wrong example actively hurts — the model imitates what it sees, and ordering/recency effects mean it may copy the error. Never include an incorrect demonstration."
       },
       {
@@ -50,7 +58,9 @@
           "It requires fine-tuning the embedding model first",
           "It forces you to use more than 20 examples per request"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Retrieving the most relevant examples per input improves quality as your library grows, but because the examples change per request, the prompt prefix is no longer stable — which defeats prompt caching and raises cost. Static examples keep the prefix cacheable."
       }
     ]
@@ -67,7 +77,9 @@
           "It lowers the effective temperature of generation",
           "Longer outputs are always rated higher by the training process"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Each generated token is a fixed amount of compute. By reasoning first, the model spends many tokens of computation — and can store intermediate results in the visible text — before producing the answer. That's also why the answer must come after the reasoning, never before."
       },
       {
@@ -80,7 +92,9 @@
           "Put 'reasoning' before 'answer' so the answer is generated after the reasoning tokens",
           "Use two separate API calls; CoT can't be combined with JSON"
         ],
-        "answer": [2],
+        "answer": [
+          2
+        ],
         "explanation": "Generation is sequential: tokens earlier in the output influence later tokens, not vice versa. If 'answer' is generated first, the reasoning is post-hoc rationalization that couldn't have improved it. Order the schema so reasoning fields precede the answer field."
       },
       {
@@ -93,7 +107,9 @@
           "Disable thinking entirely since it duplicates your prompt's instructions",
           "Provide more few-shot examples to replace the thinking phase"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "Reasoning models learned to deliberate via RL, so micromanaging their steps often hurts. State the goal and the criteria for a good answer, and control depth via the thinking budget. Explicit CoT scripting still pays off on standard, non-reasoning models — which serve most high-volume traffic."
       },
       {
@@ -106,7 +122,11 @@
           "Decomposing a hard task into smaller calls can beat one monolithic prompt",
           "Verification passes work best when checking an answer is easier than producing it"
         ],
-        "answer": [0, 2, 3],
+        "answer": [
+          0,
+          2,
+          3
+        ],
         "explanation": "Self-consistency, decomposition, and verifier passes are all real, cost-for-reliability trades. But chains of thought are not guaranteed faithful — models can produce correct-sounding reasoning that didn't drive the answer, so verify claims mechanically when it matters."
       }
     ]
@@ -123,7 +143,9 @@
           "Because system prompts are compiled into the model at deploy time",
           "Because users can read the system prompt and hold you to it"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Your application code parses what the model produces and assumes the behavioral rules hold. Changing the system prompt changes that interface — exactly like changing a function signature — so it deserves version control, code review, evals before deploy, and per-request version logging."
       },
       {
@@ -136,7 +158,9 @@
           "A fallback model used when the primary model is overloaded",
           "A stop sequence that truncates overly long outputs"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Without a defined action for uncertainty or off-topic input, the model improvises — usually by guessing confidently. Telling it exactly what to do instead ('if the request is not about billing, respond with...') converts unpredictable failures into designed behavior."
       },
       {
@@ -149,7 +173,11 @@
           "Structure the prompt predictably: role, context, rules, output format, examples, escape hatches",
           "Enforce hard security requirements in code, not in prompt prose"
         ],
-        "answer": [0, 2, 3],
+        "answer": [
+          0,
+          2,
+          3
+        ],
         "explanation": "Positive, specific instructions outperform bare prohibitions; predictable structure aids maintenance; and prose rules are suggestions, not guarantees — security belongs in code. Untrusted input must never go in the system prompt: that's handing attacker text your highest-trust position (see Module 8)."
       },
       {
@@ -162,7 +190,9 @@
           "Rewrite the prompt from scratch for the new model",
           "Lower the temperature to compensate for the new model"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "The system's behavior is a function of prompt AND model. A new model can interpret the same instructions differently — formats drift, edge-case handling changes. Gate the upgrade behind the same eval run you'd require for a prompt edit."
       }
     ]
@@ -179,7 +209,9 @@
           "Models ignore everything after the first 4,000 tokens",
           "Long contexts only degrade performance for code, not prose"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Empirically, information at the start and end of a long context is recalled far better than information buried in the middle. Practical consequence: instructions at the top, bulk reference data in the middle, and the actual task — plus restated critical rules — at the end."
       },
       {
@@ -192,7 +224,9 @@
           "Providers only cache the first 1,000 tokens",
           "Stable content compresses better in transit"
         ],
-        "answer": [0],
+        "answer": [
+          0
+        ],
         "explanation": "Prompt caching reuses computation for an exact-matching prefix. If a timestamp or user name appears early, every token after it misses the cache on every request. Order stable-first (system prompt, tools, examples), volatile-last, and keep changing values out of the system prompt."
       },
       {
@@ -205,7 +239,9 @@
           "Longer prompts force the temperature higher",
           "Models penalize prompts that exceed an internal word count"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A big window means the model *can* read more, not that it reads everything equally well. Irrelevant material competes for attention with what matters, measurably degrading accuracy. Treat the window as a paid attention budget and curate what goes in."
       },
       {
@@ -218,7 +254,11 @@
           "Rely on the model remembering earlier turns from previous API calls",
           "Externalize durable facts to memory or retrieval and pull them back when relevant"
         ],
-        "answer": [0, 1, 3],
+        "answer": [
+          0,
+          1,
+          3
+        ],
         "explanation": "Truncation, summarization, and externalizing to memory/RAG are the three standard policies — each trading fidelity, cost, and complexity differently. Relying on the model's memory fails structurally: the API is stateless, and the model sees only what you send (Module 1)."
       }
     ]
@@ -235,7 +275,9 @@
           "Testing with real user inputs instead of synthetic ones",
           "Changing the prompt more than once per week"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "A change that fixes the case in front of you can silently break others. The professional loop runs every change against the same fixed set of cases and compares results — improvement must be measured across the set, not vibed from one output."
       },
       {
@@ -248,7 +290,9 @@
           "Switch to a larger model",
           "Repeat the format description three times"
         ],
-        "answer": [1],
+        "answer": [
+          1
+        ],
         "explanation": "Format is communicated far more reliably by demonstration than by description. A single concrete example of the desired output typically fixes drift that paragraphs of prose specification cannot."
       },
       {
@@ -261,7 +305,11 @@
           "Re-run the full test set when upgrading the model, even if the prompt is unchanged",
           "Skip re-testing when a change only adds a new rule, since additions can't cause regressions"
         ],
-        "answer": [0, 1, 2],
+        "answer": [
+          0,
+          1,
+          2
+        ],
         "explanation": "Single-variable changes, versioned prompt files with per-request logging, and treating model upgrades as changes are all core discipline. Additions absolutely can regress behavior — a new rule can contradict an old one or shift attention — so everything gets re-tested."
       },
       {
@@ -274,8 +322,106 @@
           "Recognize prompting's limit: missing knowledge needs retrieval (RAG), not more prose",
           "Increase the temperature to encourage more diverse answers"
         ],
-        "answer": [2],
+        "answer": [
+          2
+        ],
         "explanation": "Prompting selects behavior the model already has; it cannot add knowledge the model lacks. When failures are missing or stale facts, the fix is retrieval (Module 4) — just as computation failures want tool calling (Module 3) and stubborn style issues may want fine-tuning (Module 6)."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "A teammate's prompt has detailed format prose but outputs still drift, and they 'fixed' it by testing one example. Which two module lessons are they violating?",
+        "options": [
+          "Demonstrate format with examples (Lesson 1) and never judge changes without re-running a fixed case set (Lesson 5)",
+          "Use higher temperature (Lesson 2) and longer prompts (Lesson 4)",
+          "Move all rules into the user message (Lesson 3) and disable few-shot (Lesson 1)",
+          "Use a base model (Lesson 1) and skip versioning (Lesson 3)"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "Format is taught by demonstration, not description — and a change validated on one output is unvalidated. Few-shot examples plus the iterate-measure-commit loop fix both habits."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "You want a JSON output with reasoning and answer fields from a standard (non-reasoning) model. What's the right design?",
+        "options": [
+          "Order 'reasoning' before 'answer' in the schema so reasoning tokens precede the answer",
+          "Order 'answer' first for easy parsing",
+          "Omit reasoning — it has no effect on accuracy",
+          "Run two models in parallel and merge"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "Generation is sequential: the answer benefits from reasoning only if generated after it. Field ordering in the output schema is CoT applied to structured output."
+      },
+      {
+        "id": "r3",
+        "type": "single",
+        "prompt": "Your system prompt contains the current timestamp near the top. What's the consequence?",
+        "options": [
+          "Nothing — timestamps are ignored by caches",
+          "Every request misses the prompt cache from that point on, since one changed byte invalidates everything after it",
+          "Responses become non-deterministic",
+          "The context window shrinks permanently"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Caches match exact prefixes. Volatile values belong at the end of the prompt — order stable-first to keep the ~90% input-cost savings."
+      },
+      {
+        "id": "r4",
+        "type": "multi",
+        "prompt": "Which practices treat prompts as software contracts? (Select all that apply.)",
+        "options": [
+          "Version-controlled prompt files with per-request version logging",
+          "Eval-gated changes, including model upgrades",
+          "Escape hatches defining behavior for uncertainty and off-topic input",
+          "Editing prompts live in production for fast iteration"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Contracts get versioning, gated migrations, and defined edge-case behavior. Live-editing unversioned prompts is how silent regressions ship."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "A long prompt has instructions at top, data in the middle, and the task at the end, with critical rules restated late. What research finding motivates this layout?",
+        "options": [
+          "Models read right-to-left",
+          "'Lost in the middle' — recall is U-shaped, strongest at the start and end of context",
+          "Attention is uniform across positions",
+          "Tokens at the end cost less"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Long-context recall is strongest at the edges. The layout puts load-bearing content where attention is strongest."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "After disciplined iteration, your prompt still fails on facts the model can't know and arithmetic it gets wrong. What's the module's verdict?",
+        "options": [
+          "Iterate more — prompting solves everything eventually",
+          "Prompting has limits: missing knowledge wants retrieval (Module 4), computation wants tools (Module 3)",
+          "Switch to all-caps instructions",
+          "Add 20 more few-shot examples"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Prompting selects existing capability. Knowledge gaps and computation are architectural problems with architectural fixes — recognizing the plateau is part of the workflow."
       }
     ]
   }
