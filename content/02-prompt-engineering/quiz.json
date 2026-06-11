@@ -1,0 +1,282 @@
+{
+  "zero-few-shot": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is in-context learning actually doing when you add few-shot examples to a prompt?",
+        "options": [
+          "Updating the model's weights with your examples",
+          "Conditioning the model to select a pattern it already learned during training",
+          "Adding new factual knowledge the model didn't have",
+          "Fine-tuning a temporary copy of the model for your session"
+        ],
+        "answer": [1],
+        "explanation": "Examples in the prompt don't train anything — the weights are frozen. They condition generation, steering the model toward patterns and formats it already learned in pre-training. That's why examples are great for demonstrating format and policy but can't inject new knowledge."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What should you do before investing in few-shot examples for a task?",
+        "options": [
+          "Write at least ten examples so the model has enough data",
+          "Switch to a base (non-instruction-tuned) model first",
+          "Baseline the task zero-shot — modern instruction-tuned models often don't need examples",
+          "Raise the temperature so the model explores more formats"
+        ],
+        "answer": [2],
+        "explanation": "Modern instruction-tuned models handle many tasks well from instructions alone. Always measure zero-shot performance first; if it's already sufficient, examples just add token cost. Add examples when you need to demonstrate format, style, or edge-case policy."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which practices improve few-shot example quality? (Select all that apply.)",
+        "options": [
+          "Choosing examples that define the boundaries of tricky cases",
+          "Including one deliberately wrong example so the model learns what to avoid",
+          "Balancing labels so the model doesn't learn a majority-class bias",
+          "Encoding examples as alternating user/assistant turns"
+        ],
+        "answer": [0, 2, 3],
+        "explanation": "Boundary-defining examples, balanced labels, and alternating-turn encoding all measurably help. A wrong example actively hurts — the model imitates what it sees, and ordering/recency effects mean it may copy the error. Never include an incorrect demonstration."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "What is the main trade-off of dynamic few-shot (retrieving similar examples per input)?",
+        "options": [
+          "It only works with base models, not instruction-tuned ones",
+          "Quality scales with your example library, but the changing prompt prefix sacrifices prompt-cache hits",
+          "It requires fine-tuning the embedding model first",
+          "It forces you to use more than 20 examples per request"
+        ],
+        "answer": [1],
+        "explanation": "Retrieving the most relevant examples per input improves quality as your library grows, but because the examples change per request, the prompt prefix is no longer stable — which defeats prompt caching and raises cost. Static examples keep the prefix cacheable."
+      }
+    ]
+  },
+  "chain-of-thought": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why does chain-of-thought prompting improve accuracy on hard problems?",
+        "options": [
+          "It activates a separate logic engine inside the model",
+          "Reasoning tokens buy the model more serial computation and act as working memory before it commits to an answer",
+          "It lowers the effective temperature of generation",
+          "Longer outputs are always rated higher by the training process"
+        ],
+        "answer": [1],
+        "explanation": "Each generated token is a fixed amount of compute. By reasoning first, the model spends many tokens of computation — and can store intermediate results in the visible text — before producing the answer. That's also why the answer must come after the reasoning, never before."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "You're asking a model for JSON output with both a 'reasoning' field and an 'answer' field. What ordering matters?",
+        "options": [
+          "Put 'answer' first so it's easy to parse",
+          "Field order is irrelevant since JSON objects are unordered",
+          "Put 'reasoning' before 'answer' so the answer is generated after the reasoning tokens",
+          "Use two separate API calls; CoT can't be combined with JSON"
+        ],
+        "answer": [2],
+        "explanation": "Generation is sequential: tokens earlier in the output influence later tokens, not vice versa. If 'answer' is generated first, the reasoning is post-hoc rationalization that couldn't have improved it. Order the schema so reasoning fields precede the answer field."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "How should you adapt prompting for reasoning models with extended thinking?",
+        "options": [
+          "Give them goals and success criteria, and tune the thinking budget, rather than scripting step-by-step instructions",
+          "Always add 'think step by step' — it works identically on all model types",
+          "Disable thinking entirely since it duplicates your prompt's instructions",
+          "Provide more few-shot examples to replace the thinking phase"
+        ],
+        "answer": [0],
+        "explanation": "Reasoning models learned to deliberate via RL, so micromanaging their steps often hurts. State the goal and the criteria for a good answer, and control depth via the thinking budget. Explicit CoT scripting still pays off on standard, non-reasoning models — which serve most high-volume traffic."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which statements about reasoning techniques are true? (Select all that apply.)",
+        "options": [
+          "Self-consistency samples multiple reasoning paths and takes a majority vote, trading cost for reliability",
+          "A model's stated chain of thought is a guaranteed faithful account of how it reached its answer",
+          "Decomposing a hard task into smaller calls can beat one monolithic prompt",
+          "Verification passes work best when checking an answer is easier than producing it"
+        ],
+        "answer": [0, 2, 3],
+        "explanation": "Self-consistency, decomposition, and verifier passes are all real, cost-for-reliability trades. But chains of thought are not guaranteed faithful — models can produce correct-sounding reasoning that didn't drive the answer, so verify claims mechanically when it matters."
+      }
+    ]
+  },
+  "system-prompts": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why should a system prompt be treated as a software contract?",
+        "options": [
+          "Because providers legally require system prompts to be versioned",
+          "Because downstream code depends on the output format and behavioral rules it specifies, so changes can break consumers",
+          "Because system prompts are compiled into the model at deploy time",
+          "Because users can read the system prompt and hold you to it"
+        ],
+        "answer": [1],
+        "explanation": "Your application code parses what the model produces and assumes the behavioral rules hold. Changing the system prompt changes that interface — exactly like changing a function signature — so it deserves version control, code review, evals before deploy, and per-request version logging."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What is an 'escape hatch' in a system prompt?",
+        "options": [
+          "A hidden command that lets developers bypass the model's rules",
+          "A defined action for the model to take when it's uncertain or the input is out of scope",
+          "A fallback model used when the primary model is overloaded",
+          "A stop sequence that truncates overly long outputs"
+        ],
+        "answer": [1],
+        "explanation": "Without a defined action for uncertainty or off-topic input, the model improvises — usually by guessing confidently. Telling it exactly what to do instead ('if the request is not about billing, respond with...') converts unpredictable failures into designed behavior."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which are sound system prompt practices? (Select all that apply.)",
+        "options": [
+          "Phrase rules positively and pair every 'never' with what to do instead",
+          "Place untrusted user data inside the system prompt so the model treats it with authority",
+          "Structure the prompt predictably: role, context, rules, output format, examples, escape hatches",
+          "Enforce hard security requirements in code, not in prompt prose"
+        ],
+        "answer": [0, 2, 3],
+        "explanation": "Positive, specific instructions outperform bare prohibitions; predictable structure aids maintenance; and prose rules are suggestions, not guarantees — security belongs in code. Untrusted input must never go in the system prompt: that's handing attacker text your highest-trust position (see Module 8)."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "You upgrade to a new model version without touching your system prompt. What should happen first?",
+        "options": [
+          "Nothing — the prompt didn't change, so behavior won't either",
+          "Treat it as a migration: run your eval suite, because model upgrades shift behavior under an unchanged prompt",
+          "Rewrite the prompt from scratch for the new model",
+          "Lower the temperature to compensate for the new model"
+        ],
+        "answer": [1],
+        "explanation": "The system's behavior is a function of prompt AND model. A new model can interpret the same instructions differently — formats drift, edge-case handling changes. Gate the upgrade behind the same eval run you'd require for a prompt edit."
+      }
+    ]
+  },
+  "context-management": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What does the 'lost in the middle' finding say about long contexts?",
+        "options": [
+          "Models recall the middle of the context best and the edges worst",
+          "Recall is U-shaped: strongest at the beginning and end of the context, weakest in the middle",
+          "Models ignore everything after the first 4,000 tokens",
+          "Long contexts only degrade performance for code, not prose"
+        ],
+        "answer": [1],
+        "explanation": "Empirically, information at the start and end of a long context is recalled far better than information buried in the middle. Practical consequence: instructions at the top, bulk reference data in the middle, and the actual task — plus restated critical rules — at the end."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Why does prompt caching reward putting stable content first in your prompt?",
+        "options": [
+          "Caches are keyed on a prompt prefix — one changed byte invalidates everything after it",
+          "Models attend more strongly to the start of the prompt",
+          "Providers only cache the first 1,000 tokens",
+          "Stable content compresses better in transit"
+        ],
+        "answer": [0],
+        "explanation": "Prompt caching reuses computation for an exact-matching prefix. If a timestamp or user name appears early, every token after it misses the cache on every request. Order stable-first (system prompt, tools, examples), volatile-last, and keep changing values out of the system prompt."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "Why can adding more (loosely relevant) context reduce answer quality even when it fits in the window?",
+        "options": [
+          "The API truncates inputs above 50% of the window",
+          "Attention is a finite budget — irrelevant tokens dilute it and distract the model, beyond just costing money",
+          "Longer prompts force the temperature higher",
+          "Models penalize prompts that exceed an internal word count"
+        ],
+        "answer": [1],
+        "explanation": "A big window means the model *can* read more, not that it reads everything equally well. Irrelevant material competes for attention with what matters, measurably degrading accuracy. Treat the window as a paid attention budget and curate what goes in."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which are valid strategies for a chat history that grows without bound? (Select all that apply.)",
+        "options": [
+          "Truncate to the most recent N turns",
+          "Summarize older turns and keep the summary plus recent turns",
+          "Rely on the model remembering earlier turns from previous API calls",
+          "Externalize durable facts to memory or retrieval and pull them back when relevant"
+        ],
+        "answer": [0, 1, 3],
+        "explanation": "Truncation, summarization, and externalizing to memory/RAG are the three standard policies — each trading fidelity, cost, and complexity differently. Relying on the model's memory fails structurally: the API is stateless, and the model sees only what you send (Module 1)."
+      }
+    ]
+  },
+  "prompt-iteration": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is the defining mistake of amateur prompt iteration?",
+        "options": [
+          "Using files instead of a prompt-management dashboard",
+          "Judging a prompt change by eyeballing one or two outputs instead of re-running a fixed test set",
+          "Testing with real user inputs instead of synthetic ones",
+          "Changing the prompt more than once per week"
+        ],
+        "answer": [1],
+        "explanation": "A change that fixes the case in front of you can silently break others. The professional loop runs every change against the same fixed set of cases and compares results — improvement must be measured across the set, not vibed from one output."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Your prompt's output format keeps drifting despite a detailed format description. Per the debugging table, what's the first fix to try?",
+        "options": [
+          "Raise max_tokens so the model has room to comply",
+          "Add a few-shot example demonstrating the exact format",
+          "Switch to a larger model",
+          "Repeat the format description three times"
+        ],
+        "answer": [1],
+        "explanation": "Format is communicated far more reliably by demonstration than by description. A single concrete example of the desired output typically fixes drift that paragraphs of prose specification cannot."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which practices belong to a disciplined prompt workflow? (Select all that apply.)",
+        "options": [
+          "Change one variable at a time so you know which edit moved the score",
+          "Keep prompts in version-controlled files and log the version with every request",
+          "Re-run the full test set when upgrading the model, even if the prompt is unchanged",
+          "Skip re-testing when a change only adds a new rule, since additions can't cause regressions"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Single-variable changes, versioned prompt files with per-request logging, and treating model upgrades as changes are all core discipline. Additions absolutely can regress behavior — a new rule can contradict an old one or shift attention — so everything gets re-tested."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "After several disciplined iterations, accuracy on factual questions has plateaued and the model still invents details. What's the right move?",
+        "options": [
+          "Keep iterating — every task is solvable with enough prompt refinement",
+          "Add 'do not hallucinate' to the system prompt in capital letters",
+          "Recognize prompting's limit: missing knowledge needs retrieval (RAG), not more prose",
+          "Increase the temperature to encourage more diverse answers"
+        ],
+        "answer": [2],
+        "explanation": "Prompting selects behavior the model already has; it cannot add knowledge the model lacks. When failures are missing or stale facts, the fix is retrieval (Module 4) — just as computation failures want tool calling (Module 3) and stubborn style issues may want fine-tuning (Module 6)."
+      }
+    ]
+  }
+}
