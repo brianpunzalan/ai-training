@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Engineering Training</title>
+  <meta name="description" content="A full-spectrum, self-paced AI Engineering course: LLM fundamentals, prompting, RAG, agents, fine-tuning, evals, and production LLMOps.">
+  <script>
+    // Apply saved theme before first paint to avoid flash of wrong theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem('ai-training-progress');
+        var theme = saved ? (JSON.parse(saved).settings || {}).theme : null;
+        if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark" disabled>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧠</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" id="sidebar-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">☰</button>
+    <a href="#/" class="brand">🧠 <span>AI Engineering Training</span></a>
+    <div class="topbar-spacer"></div>
+    <button class="search-trigger" id="search-trigger" title="Search (Ctrl+K)">
+      <span>🔍 Search</span><kbd>Ctrl K</kbd>
+    </button>
+    <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  </header>
+
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="Course navigation"></nav>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <main class="content" id="content">
+      <div class="loading">Loading course…</div>
+    </main>
+  </div>
+
+  <div class="search-modal hidden" id="search-modal" role="dialog" aria-label="Search">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search lessons… (Esc to close)" autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

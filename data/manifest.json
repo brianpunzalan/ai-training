@@ -1,0 +1,210 @@
+{
+  "siteTitle": "AI Engineering Training",
+  "tagline": "A full-spectrum, self-paced course: from LLM fundamentals to production AI systems",
+  "modules": [
+    {
+      "id": "foundations",
+      "title": "Foundations of LLMs",
+      "level": "Beginner",
+      "dir": "content/01-foundations",
+      "quiz": "content/01-foundations/quiz.json",
+      "description": "How large language models actually work — tokens, embeddings, sampling — and how to make your first API calls with confidence.",
+      "lessons": [
+        { "id": "how-llms-work", "title": "How LLMs Work", "file": "01-how-llms-work.md" },
+        { "id": "tokens-context-windows", "title": "Tokens, Tokenization & Context Windows", "file": "02-tokens-context-windows.md" },
+        { "id": "embeddings", "title": "Embeddings & Vector Representations", "file": "03-embeddings.md" },
+        { "id": "sampling-parameters", "title": "Sampling Parameters", "file": "04-sampling-parameters.md" },
+        { "id": "first-api-call", "title": "Your First API Call", "file": "05-first-api-call.md", "lab": "lab-01-first-api-call" },
+        { "id": "provider-landscape", "title": "The Provider Landscape", "file": "06-provider-landscape.md" }
+      ],
+      "references": [
+        { "title": "3Blue1Brown — But what is a GPT? (visual transformer intuition)", "url": "https://www.youtube.com/watch?v=wjZofJX0v4M" },
+        { "title": "Andrej Karpathy — Intro to Large Language Models", "url": "https://www.youtube.com/watch?v=zjkBMFhNj_g" },
+        { "title": "Attention Is All You Need (the transformer paper)", "url": "https://arxiv.org/abs/1706.03762" },
+        { "title": "The Illustrated Transformer — Jay Alammar", "url": "https://jalammar.github.io/illustrated-transformer/" },
+        { "title": "OpenAI Tokenizer (interactive)", "url": "https://platform.openai.com/tokenizer" },
+        { "title": "Anthropic API documentation", "url": "https://docs.anthropic.com/" },
+        { "title": "OpenAI API documentation", "url": "https://platform.openai.com/docs" }
+      ]
+    },
+    {
+      "id": "prompting",
+      "title": "Prompt & Context Engineering",
+      "level": "Beginner",
+      "dir": "content/02-prompt-engineering",
+      "quiz": "content/02-prompt-engineering/quiz.json",
+      "description": "Move beyond trial-and-error prompting: few-shot design, reasoning techniques, system prompts as versioned contracts, and managing the context window deliberately.",
+      "lessons": [
+        { "id": "zero-few-shot", "title": "Zero-shot, Few-shot & In-context Learning", "file": "01-zero-few-shot.md" },
+        { "id": "chain-of-thought", "title": "Chain-of-Thought & Reasoning Techniques", "file": "02-chain-of-thought.md" },
+        { "id": "system-prompts", "title": "System Prompts as Software Contracts", "file": "03-system-prompts.md" },
+        { "id": "context-management", "title": "Context Window Management", "file": "04-context-management.md" },
+        { "id": "prompt-iteration", "title": "The Prompt Iteration Workflow", "file": "05-prompt-iteration.md", "lab": "lab-03-prompt-eval-harness" }
+      ],
+      "references": [
+        { "title": "Prompt Engineering Guide (promptingguide.ai)", "url": "https://www.promptingguide.ai/" },
+        { "title": "Anthropic — Prompt engineering overview", "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" },
+        { "title": "Chain-of-Thought Prompting Elicits Reasoning in LLMs (Wei et al.)", "url": "https://arxiv.org/abs/2201.11903" },
+        { "title": "Anthropic — Effective context engineering for AI agents", "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" },
+        { "title": "Language Models are Few-Shot Learners (GPT-3 paper)", "url": "https://arxiv.org/abs/2005.14165" },
+        { "title": "Lost in the Middle: How Language Models Use Long Contexts", "url": "https://arxiv.org/abs/2307.03172" }
+      ]
+    },
+    {
+      "id": "structured-outputs",
+      "title": "Structured Outputs & Tool Calling",
+      "level": "Intermediate",
+      "dir": "content/03-structured-outputs-tools",
+      "quiz": "content/03-structured-outputs-tools/quiz.json",
+      "description": "Make model output machine-consumable: JSON schemas, validation and retry loops, streaming, function/tool calling, and multimodal inputs.",
+      "lessons": [
+        { "id": "why-free-text-fails", "title": "Why Free Text Fails in Production", "file": "01-why-free-text-fails.md" },
+        { "id": "structured-output-techniques", "title": "Structured Output Techniques", "file": "02-structured-output-techniques.md" },
+        { "id": "streaming", "title": "Streaming Responses", "file": "03-streaming.md", "lab": "lab-02-streaming-structured" },
+        { "id": "tool-calling", "title": "Function & Tool Calling Fundamentals", "file": "04-tool-calling.md" },
+        { "id": "multimodal", "title": "Multimodal Inputs", "file": "05-multimodal.md" }
+      ],
+      "references": [
+        { "title": "OpenAI — Structured Outputs guide", "url": "https://platform.openai.com/docs/guides/structured-outputs" },
+        { "title": "Anthropic — Tool use documentation", "url": "https://docs.anthropic.com/en/docs/build-with-claude/tool-use" },
+        { "title": "JSON Schema specification", "url": "https://json-schema.org/learn/getting-started-step-by-step" },
+        { "title": "Pydantic documentation (validation in Python)", "url": "https://docs.pydantic.dev/" },
+        { "title": "Zod documentation (validation in TypeScript)", "url": "https://zod.dev/" },
+        { "title": "Server-Sent Events — MDN", "url": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events" }
+      ]
+    },
+    {
+      "id": "rag",
+      "title": "Retrieval-Augmented Generation (RAG)",
+      "level": "Intermediate",
+      "dir": "content/04-rag",
+      "quiz": "content/04-rag/quiz.json",
+      "description": "The most in-demand production pattern: chunking, embeddings, vector databases, hybrid search, reranking, and rigorous RAG evaluation.",
+      "lessons": [
+        { "id": "why-rag", "title": "Why RAG — and RAG vs Long Context", "file": "01-why-rag.md" },
+        { "id": "chunking", "title": "Chunking Strategies", "file": "02-chunking.md" },
+        { "id": "vector-databases", "title": "Embeddings & Vector Databases", "file": "03-vector-databases.md" },
+        { "id": "hybrid-search-reranking", "title": "Hybrid Search & Reranking", "file": "04-hybrid-search-reranking.md" },
+        { "id": "rag-pipeline", "title": "Building a RAG Pipeline End-to-End", "file": "05-rag-pipeline.md", "lab": "lab-04-rag-from-scratch" },
+        { "id": "evaluating-rag", "title": "Evaluating RAG", "file": "06-evaluating-rag.md" }
+      ],
+      "references": [
+        { "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP (original RAG paper)", "url": "https://arxiv.org/abs/2005.11401" },
+        { "title": "RAGAS documentation — RAG evaluation metrics", "url": "https://docs.ragas.io/" },
+        { "title": "Anthropic — Introducing Contextual Retrieval", "url": "https://www.anthropic.com/news/contextual-retrieval" },
+        { "title": "pgvector — vectors in PostgreSQL", "url": "https://github.com/pgvector/pgvector" },
+        { "title": "Pinecone Learning Center — vector search fundamentals", "url": "https://www.pinecone.io/learn/" },
+        { "title": "Reciprocal Rank Fusion (hybrid search) paper", "url": "https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf" }
+      ]
+    },
+    {
+      "id": "agents",
+      "title": "AI Agents & Harness Engineering",
+      "level": "Intermediate",
+      "dir": "content/05-agents",
+      "quiz": "content/05-agents/quiz.json",
+      "description": "Agents as a loop of model + tools + state: planning patterns, memory, harness engineering, the Model Context Protocol, and multi-agent architectures.",
+      "lessons": [
+        { "id": "what-is-an-agent", "title": "What Is an Agent?", "file": "01-what-is-an-agent.md" },
+        { "id": "planning-patterns", "title": "Planning & Reasoning Patterns", "file": "02-planning-patterns.md" },
+        { "id": "agent-memory", "title": "Agent Memory", "file": "03-agent-memory.md" },
+        { "id": "agent-loop", "title": "Building an Agent Loop", "file": "04-agent-loop.md", "lab": "lab-05-agent-loop" },
+        { "id": "harness-engineering", "title": "Harness Engineering", "file": "05-harness-engineering.md" },
+        { "id": "mcp", "title": "MCP: The Model Context Protocol", "file": "06-mcp.md", "lab": "lab-06-mcp-server" },
+        { "id": "multi-agent", "title": "Multi-Agent Patterns", "file": "07-multi-agent.md" }
+      ],
+      "references": [
+        { "title": "Anthropic — Building effective agents", "url": "https://www.anthropic.com/engineering/building-effective-agents" },
+        { "title": "ReAct: Synergizing Reasoning and Acting in Language Models", "url": "https://arxiv.org/abs/2210.03629" },
+        { "title": "Model Context Protocol — official specification & docs", "url": "https://modelcontextprotocol.io/" },
+        { "title": "Anthropic — How we built our multi-agent research system", "url": "https://www.anthropic.com/engineering/multi-agent-research-system" },
+        { "title": "Lilian Weng — LLM Powered Autonomous Agents", "url": "https://lilianweng.github.io/posts/2023-06-23-agent/" },
+        { "title": "Reflexion: Language Agents with Verbal Reinforcement Learning", "url": "https://arxiv.org/abs/2303.11366" },
+        { "title": "Claude Agent SDK documentation", "url": "https://docs.anthropic.com/en/api/agent-sdk/overview" }
+      ]
+    },
+    {
+      "id": "fine-tuning",
+      "title": "Fine-Tuning & Model Customization",
+      "level": "Advanced",
+      "dir": "content/06-fine-tuning",
+      "quiz": "content/06-fine-tuning/quiz.json",
+      "description": "When (and when not) to fine-tune, how LoRA/QLoRA work, dataset curation — half the work — and evaluating what you trained.",
+      "lessons": [
+        { "id": "prompt-vs-rag-vs-finetune", "title": "Prompting vs RAG vs Fine-Tuning", "file": "01-prompt-vs-rag-vs-finetune.md" },
+        { "id": "how-finetuning-works", "title": "How Fine-Tuning Works: Full FT, LoRA, QLoRA", "file": "02-how-finetuning-works.md" },
+        { "id": "dataset-curation", "title": "Dataset Curation", "file": "03-dataset-curation.md" },
+        { "id": "running-a-finetune", "title": "Running a Fine-Tune (LoRA Walkthrough)", "file": "04-running-a-finetune.md" },
+        { "id": "evaluating-finetunes", "title": "Evaluating Fine-Tuned Models", "file": "05-evaluating-finetunes.md" }
+      ],
+      "references": [
+        { "title": "LoRA: Low-Rank Adaptation of Large Language Models", "url": "https://arxiv.org/abs/2106.09685" },
+        { "title": "QLoRA: Efficient Finetuning of Quantized LLMs", "url": "https://arxiv.org/abs/2305.14314" },
+        { "title": "Hugging Face PEFT documentation", "url": "https://huggingface.co/docs/peft" },
+        { "title": "Hugging Face TRL — SFTTrainer", "url": "https://huggingface.co/docs/trl/sft_trainer" },
+        { "title": "Unsloth — efficient open-weight fine-tuning", "url": "https://docs.unsloth.ai/" },
+        { "title": "OpenAI — Fine-tuning guide", "url": "https://platform.openai.com/docs/guides/fine-tuning" }
+      ]
+    },
+    {
+      "id": "evaluation",
+      "title": "Evaluation & Observability",
+      "level": "Advanced",
+      "dir": "content/07-evaluation",
+      "quiz": "content/07-evaluation/quiz.json",
+      "description": "The discipline that separates demos from products: golden test sets, programmatic checks, LLM-as-judge, tracing, and regression gates in CI.",
+      "lessons": [
+        { "id": "eval-driven-development", "title": "Why Evals Are the Moat", "file": "01-eval-driven-development.md" },
+        { "id": "golden-test-sets", "title": "Golden Test Sets", "file": "02-golden-test-sets.md" },
+        { "id": "programmatic-checks", "title": "Rule-Based & Programmatic Checks", "file": "03-programmatic-checks.md" },
+        { "id": "llm-as-judge", "title": "LLM-as-Judge", "file": "04-llm-as-judge.md", "lab": "lab-07-llm-as-judge" },
+        { "id": "tracing-observability", "title": "Tracing & Observability", "file": "05-tracing-observability.md" },
+        { "id": "regression-gates", "title": "Regression Gates & CI for Prompts", "file": "06-regression-gates.md" }
+      ],
+      "references": [
+        { "title": "Hamel Husain — Your AI Product Needs Evals", "url": "https://hamel.dev/blog/posts/evals/" },
+        { "title": "Judging LLM-as-a-Judge with MT-Bench (Zheng et al.)", "url": "https://arxiv.org/abs/2306.05685" },
+        { "title": "Langfuse documentation — open-source LLM observability", "url": "https://langfuse.com/docs" },
+        { "title": "LangSmith documentation", "url": "https://docs.langchain.com/langsmith/home" },
+        { "title": "Arize Phoenix — open-source tracing & evals", "url": "https://arize.com/docs/phoenix" },
+        { "title": "OpenAI Evals framework", "url": "https://github.com/openai/evals" },
+        { "title": "promptfoo — test-driven prompt engineering", "url": "https://www.promptfoo.dev/docs/intro/" }
+      ]
+    },
+    {
+      "id": "production",
+      "title": "Production & LLMOps",
+      "level": "Advanced",
+      "dir": "content/08-production",
+      "quiz": "content/08-production/quiz.json",
+      "description": "Shipping and operating LLM systems: latency and cost engineering, caching, guardrails, prompt-injection defense, responsible AI, and a capstone readiness checklist.",
+      "lessons": [
+        { "id": "latency-cost", "title": "Latency & Cost Optimization", "file": "01-latency-cost.md" },
+        { "id": "caching", "title": "Caching Strategies", "file": "02-caching.md" },
+        { "id": "guardrails", "title": "Guardrails & Safety Layers", "file": "03-guardrails.md", "lab": "lab-08-guardrails" },
+        { "id": "security", "title": "Security: Prompt Injection & Jailbreaks", "file": "04-security.md" },
+        { "id": "responsible-ai", "title": "Responsible AI in Practice", "file": "05-responsible-ai.md" },
+        { "id": "capstone", "title": "Capstone: The Production Readiness Checklist", "file": "06-capstone.md" }
+      ],
+      "references": [
+        { "title": "OWASP Top 10 for LLM Applications", "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/" },
+        { "title": "Anthropic — Prompt caching documentation", "url": "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" },
+        { "title": "Simon Willison — Prompt injection series", "url": "https://simonwillison.net/series/prompt-injection/" },
+        { "title": "NIST AI Risk Management Framework", "url": "https://www.nist.gov/itl/ai-risk-management-framework" },
+        { "title": "guardrails-ai documentation", "url": "https://www.guardrailsai.com/docs" },
+        { "title": "Chip Huyen — AI Engineering (book)", "url": "https://www.oreilly.com/library/view/ai-engineering/9781098166298/" },
+        { "title": "vLLM — high-throughput LLM serving", "url": "https://docs.vllm.ai/" }
+      ]
+    }
+  ],
+  "labs": [
+    { "id": "lab-01-first-api-call", "title": "Lab 01 — Your First API Call & Sampling Params", "dir": "labs/lab-01-first-api-call" },
+    { "id": "lab-02-streaming-structured", "title": "Lab 02 — Streaming + Structured JSON Output", "dir": "labs/lab-02-streaming-structured" },
+    { "id": "lab-03-prompt-eval-harness", "title": "Lab 03 — Mini Prompt-Eval Harness", "dir": "labs/lab-03-prompt-eval-harness" },
+    { "id": "lab-04-rag-from-scratch", "title": "Lab 04 — RAG From Scratch", "dir": "labs/lab-04-rag-from-scratch" },
+    { "id": "lab-05-agent-loop", "title": "Lab 05 — Agent Loop with Tool Calling", "dir": "labs/lab-05-agent-loop" },
+    { "id": "lab-06-mcp-server", "title": "Lab 06 — Build a Tiny MCP Server", "dir": "labs/lab-06-mcp-server" },
+    { "id": "lab-07-llm-as-judge", "title": "Lab 07 — LLM-as-Judge Eval Pipeline", "dir": "labs/lab-07-llm-as-judge" },
+    { "id": "lab-08-guardrails", "title": "Lab 08 — Prompt-Injection Guardrail", "dir": "labs/lab-08-guardrails" }
+  ]
+}

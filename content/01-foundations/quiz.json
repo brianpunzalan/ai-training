@@ -1,0 +1,431 @@
+{
+  "how-llms-work": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "At its core, what does an LLM compute?",
+        "options": [
+          "A database lookup over its training documents",
+          "A probability distribution over the next token, given the tokens so far",
+          "A parse tree of the user's sentence which it then answers logically",
+          "A direct mapping from questions to memorized answers"
+        ],
+        "answer": [1],
+        "explanation": "Everything an LLM does reduces to next-token prediction: given the sequence so far, it outputs a probability for every token in its vocabulary, samples one, appends it, and repeats. There is no retrieval database or symbolic reasoner inside the base mechanism."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Why does a chat model appear to 'remember' earlier turns of a conversation?",
+        "options": [
+          "The provider stores your session state inside the model between calls",
+          "The model's weights are updated after every message you send",
+          "Your application re-sends the entire conversation history with each request",
+          "Attention layers persist activations between API calls"
+        ],
+        "answer": [2],
+        "explanation": "The API is stateless: the model has no memory between calls. Chat applications create the illusion of memory by sending the full message history (or a summary of it) on every request — which is also why long conversations get expensive."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "Which training phase turns a raw 'base model' into one that follows instructions?",
+        "options": [
+          "Pre-training on more web text",
+          "Supervised fine-tuning on instruction–response pairs (plus preference tuning)",
+          "Increasing the context window",
+          "Quantization"
+        ],
+        "answer": [1],
+        "explanation": "Pre-training produces a base model that merely continues text. Supervised fine-tuning on curated instruction→response examples — followed by reinforcement learning from human/AI feedback — is what produces assistant-like, instruction-following behavior."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which weaknesses follow directly from how LLMs are built? (Select all that apply.)",
+        "options": [
+          "Unreliable exact arithmetic and character counting",
+          "No knowledge of events after the training cutoff",
+          "Inability to produce text longer than one sentence",
+          "Confidently stated wrong answers (hallucination)"
+        ],
+        "answer": [0, 1, 3],
+        "explanation": "Token-level pattern matching makes exact arithmetic and character tasks unreliable; the training cutoff bounds knowledge; and the next-token objective rewards plausible-sounding text, which produces confident hallucinations. Long outputs are not a structural problem."
+      }
+    ]
+  },
+  "tokens-context-windows": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Roughly how many tokens is 1,000 words of English prose?",
+        "options": ["About 250", "About 750", "About 1,300", "About 4,000"],
+        "answer": [2],
+        "explanation": "The rule of thumb is 1 token ≈ 0.75 English words (≈4 characters), so 1,000 words ≈ 1,300 tokens. Code and non-English languages typically tokenize less efficiently."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Why does asking a model to count the letter 'r' in 'strawberry' often fail?",
+        "options": [
+          "The model's vocabulary doesn't include the letter r",
+          "The model sees subword tokens like 'straw'+'berry', not individual characters",
+          "Counting requires a context window larger than most models have",
+          "Safety filters block character-level questions"
+        ],
+        "answer": [1],
+        "explanation": "Tokenizers split text into subword chunks. The model never directly observes characters, so character-level tasks (counting letters, reversing strings) are unreliable. The robust fix is tool use — give the model a code interpreter or function."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "What does the 'lost in the middle' effect describe?",
+        "options": [
+          "Models forget the system prompt halfway through generation",
+          "Models recall information at the start and end of a long context better than information in the middle",
+          "Token prices increase for the middle third of the context window",
+          "Streaming responses drop tokens mid-stream"
+        ],
+        "answer": [1],
+        "explanation": "Empirically, retrieval quality across a long context is U-shaped: content placed at the beginning or end of the prompt is recalled more reliably than content buried in the middle. A big context window is not uniformly reliable attention — placement matters."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which statements about context windows are true? (Select all that apply.)",
+        "options": [
+          "The window must hold input and generated output combined",
+          "You are billed for the full context you send on every call",
+          "Filling the window completely leaves no room for the response",
+          "Once a conversation exceeds the window, the model automatically remembers the overflow"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "The context window is a combined budget for input plus output, you pay for everything you send each call, and over-filling it truncates the response. Nothing is 'remembered' beyond the window — your application must truncate or summarize."
+      }
+    ]
+  },
+  "embeddings": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is the key property of a good text embedding space?",
+        "options": [
+          "Vectors are always exactly 1536 dimensions",
+          "Semantically similar texts map to nearby points",
+          "Each word maps to a unique prime number",
+          "Vectors compress text losslessly so the original can be recovered"
+        ],
+        "answer": [1],
+        "explanation": "Embeddings encode meaning as geometry: similar meanings land close together, so distance measures semantic dissimilarity. Dimensionality varies by model, and embeddings are lossy — you cannot reconstruct the original text."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "You switch your embedding model from model A to model B. What must you do?",
+        "options": [
+          "Nothing — embedding spaces are standardized",
+          "Re-embed your entire corpus with model B",
+          "Multiply old vectors by a conversion matrix the provider supplies",
+          "Only re-embed documents added after the switch"
+        ],
+        "answer": [1],
+        "explanation": "Vectors from different models (or versions) live in incompatible spaces — comparing a query embedded with model B against documents embedded with model A produces garbage. Changing models means re-embedding everything, so store the model name with your vectors."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "For normalized embedding vectors, cosine similarity is equivalent to what?",
+        "options": ["The dot product", "Manhattan distance", "Jaccard similarity", "Edit distance"],
+        "answer": [0],
+        "explanation": "Cosine similarity divides the dot product by the vector norms; with unit-length (normalized) vectors the norms are 1, so cosine similarity is exactly the dot product — and ranking by it matches ranking by Euclidean distance."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which inputs tend to embed POORLY for retrieval? (Select all that apply.)",
+        "options": [
+          "A focused paragraph about a single topic",
+          "A bare part number like 'SKU-88412-B'",
+          "A very long document mixing many unrelated topics",
+          "A short, self-contained FAQ answer"
+        ],
+        "answer": [1, 2],
+        "explanation": "Exact identifiers carry little semantic content for an embedding model (keyword/hybrid search handles them better), and long multi-topic documents dilute into mush — which is why RAG systems chunk documents. Focused, self-contained prose embeds well."
+      }
+    ]
+  },
+  "sampling-parameters": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What does lowering temperature toward 0 actually do?",
+        "options": [
+          "Gives the model more time to think, improving accuracy",
+          "Sharpens the sampling distribution toward the highest-probability token",
+          "Reduces the number of layers used during inference",
+          "Shrinks the context window to save cost"
+        ],
+        "answer": [1],
+        "explanation": "Temperature rescales the output distribution before sampling. Near 0 it approaches greedy decoding — always the top token. It changes randomness, not capability: the model is neither smarter nor better informed at low temperature."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Your structured-extraction pipeline returns occasionally truncated JSON. What's the FIRST thing to check?",
+        "options": [
+          "Whether temperature is too high",
+          "Whether finish_reason is 'length', meaning max_tokens cut off generation",
+          "Whether the model has been deprecated",
+          "Whether top_p is set below 0.5"
+        ],
+        "answer": [1],
+        "explanation": "Truncated output is the signature of hitting the max_tokens cap — the response is cut mid-token and any JSON is broken. Production code should check finish_reason/stop_reason on every call; 'length' means truncation."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "Does setting temperature to 0 eliminate hallucinations?",
+        "options": [
+          "Yes — randomness is the cause of hallucination",
+          "No — it only reduces variance; a confidently wrong top token is chosen every time",
+          "Yes, but only for models with more than 70B parameters",
+          "No, because temperature 0 is not allowed by most APIs"
+        ],
+        "answer": [1],
+        "explanation": "Hallucination comes from the training objective (plausible text ≠ true text), not from sampling randomness. At temperature 0 the model deterministically picks its top token — if that token is wrong, it's wrong consistently. Grounding and verification reduce hallucination; temperature only stabilizes outputs."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Which temperature setting best fits generating SQL from natural language?",
+        "options": ["0–0.3", "0.8", "1.2", "Temperature doesn't apply to SQL"],
+        "answer": [0],
+        "explanation": "Code and SQL generation have essentially one correct answer, so you want consistency, not exploration — low temperature (0 to ~0.3) is standard. High temperatures are for brainstorming and creative tasks where diversity is the feature."
+      }
+    ]
+  },
+  "first-api-call": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is the purpose of the 'system' role in the message list?",
+        "options": [
+          "It carries the developer's instructions — persona, rules, format — with higher authority than user messages",
+          "It contains operating-system information so the model can run shell commands",
+          "It is where the model writes its chain of thought",
+          "It is required to be the last message in the list"
+        ],
+        "answer": [0],
+        "explanation": "The system message (or Anthropic's top-level system parameter) is the developer's channel: it sets behavior, constraints, and output format, and models are trained to weight it above user messages. Module 2 treats it as a versioned software contract."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "A request fails with HTTP 429. What's the correct production response?",
+        "options": [
+          "Immediately retry in a tight loop until it succeeds",
+          "Retry with exponential backoff plus jitter, capped at a max attempt count",
+          "Switch providers permanently",
+          "Lower the temperature and retry"
+        ],
+        "answer": [1],
+        "explanation": "429 means rate-limited. Tight-loop retries make the problem worse; exponential backoff with jitter (e.g. ~2^attempt seconds + random) spreads the load and recovers gracefully. Official SDKs often do some of this — know your stack's behavior."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which fields should production code inspect on every LLM response? (Select all that apply.)",
+        "options": [
+          "The generated content",
+          "usage (input/output token counts)",
+          "finish_reason / stop_reason",
+          "The model's internal attention weights"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Beyond the content itself, usage powers cost tracking and finish_reason tells you whether output completed naturally, was truncated by max_tokens, wants a tool call, or was filtered. Attention weights aren't exposed by APIs."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Why pin an exact model version (e.g. 'gpt-4o-2024-08-06') in production rather than a floating alias?",
+        "options": [
+          "Floating aliases cost more per token",
+          "Model updates change behavior, and you want to control when that happens — ideally gated by your evals",
+          "Pinned versions have larger context windows",
+          "Aliases only work in development environments"
+        ],
+        "answer": [1],
+        "explanation": "Every model version has different behavior, even at temperature 0. Pinning versions means upgrades happen when you choose — after running your eval suite — instead of silently under you."
+      }
+    ]
+  },
+  "provider-landscape": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is the recommended procedure for choosing a model for a new task?",
+        "options": [
+          "Pick the current leaderboard #1 and stay on it",
+          "Prototype with a frontier model, build a small eval set, then step down tiers until quality breaks",
+          "Always use the cheapest model to control costs from day one",
+          "Use whichever model has the largest context window"
+        ],
+        "answer": [1],
+        "explanation": "Establish what's possible with a flagship first, then use your own evals to step down to the cheapest model that still passes your quality bar. Public leaderboards are directional at best; your task-specific evals are the ground truth."
+      },
+      {
+        "id": "q2",
+        "type": "multi",
+        "prompt": "Which are genuine reasons to choose open-weight models? (Select all that apply.)",
+        "options": [
+          "Data stays inside your infrastructure",
+          "They are always more capable than frontier APIs",
+          "Freedom to fine-tune and customize",
+          "No risk of the provider deprecating the model out from under you"
+        ],
+        "answer": [0, 2, 3],
+        "explanation": "Open weights buy control: private inference, fine-tuning freedom, and immunity from deprecation, plus potential cost wins at high steady volume. Raw capability still generally favors frontier APIs — that trade-off is the point."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "Where does the deepest provider lock-in actually live?",
+        "options": [
+          "In the HTTP client code, since every API is totally different",
+          "In your prompts and evals — prompts tune to a model's behavior, and evals are what make switching safe",
+          "In the billing system",
+          "In the choice of programming language"
+        ],
+        "answer": [1],
+        "explanation": "Client APIs have converged (message lists, OpenAI-compatible endpoints everywhere), so the code is easy to port. What's hard is that prompts are tuned to a specific model's quirks — and without an eval suite you can't tell whether a migration regressed quality."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Why do production systems often use multiple model tiers from the same provider?",
+        "options": [
+          "Providers require it contractually",
+          "Cheap models handle routing/extraction at scale while expensive models handle the genuinely hard cases — optimizing cost per unit of quality",
+          "Using one model would exceed rate limits",
+          "Different tiers share a cache"
+        ],
+        "answer": [1],
+        "explanation": "The fast/cheap tier is often 10–50× cheaper than the flagship. Routing easy or mechanical work (classification, extraction, triage) to cheap models and reserving the flagship for hard cases is one of the highest-leverage cost optimizations (Module 8)."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "Trace the path of one API call: which sequence is correct?",
+        "options": [
+          "Text → tokens → one parallel prefill pass → token-by-token decode → stop at end token / stop sequence / max_tokens",
+          "Text → embeddings → database lookup → template fill → response",
+          "Text → tokens → decode each input token sequentially → batch output all at once",
+          "Text → parse tree → logic engine → renderer"
+        ],
+        "answer": [0],
+        "explanation": "Input is tokenized, processed in one parallel prefill pass (building the KV cache), then output tokens are decoded one at a time until an end condition. The prefill/decode split explains why input and output tokens have different speeds and prices."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "A teammate says: 'Our 200k-token context window means we can just dump all 150 documents into every prompt.' What's the strongest counterargument?",
+        "options": [
+          "Context windows are measured in characters, not tokens",
+          "You'll pay for all of it on every call, and mid-context recall degrades ('lost in the middle') — retrieval of the relevant few documents is cheaper and more reliable",
+          "Providers ban prompts over 100k tokens",
+          "Documents can't be mixed with conversation history"
+        ],
+        "answer": [1],
+        "explanation": "Cost scales with tokens sent per call, and attention over huge contexts is not uniformly reliable. Selecting relevant content (RAG, Module 4) usually beats brute-force context stuffing on cost, latency, and accuracy."
+      },
+      {
+        "id": "r3",
+        "type": "single",
+        "prompt": "Your support-ticket classifier needs identical labels for identical tickets, run twice. Which configuration is right?",
+        "options": [
+          "Temperature 1.2 for nuanced understanding",
+          "Temperature 0 — and ideally a cache, since even T=0 isn't perfectly deterministic",
+          "High top_p with high temperature",
+          "Maximum max_tokens so the model can think"
+        ],
+        "answer": [1],
+        "explanation": "Classification wants consistency: temperature 0. But floating-point and batching effects mean T=0 is 'mostly deterministic,' not guaranteed — for hard reproducibility requirements, cache results keyed on input."
+      },
+      {
+        "id": "r4",
+        "type": "multi",
+        "prompt": "Which practices belong in production LLM code from day one? (Select all that apply.)",
+        "options": [
+          "Logging token usage with request IDs",
+          "Checking finish_reason on every response",
+          "Hardcoding the API key near the call site for clarity",
+          "Retry with exponential backoff on 429/5xx"
+        ],
+        "answer": [0, 1, 3],
+        "explanation": "Usage logging, finish-reason checks, and backoff retries are baseline hygiene. API keys belong in environment variables or a secrets manager — never in code."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "Why are embeddings computed by a separate model rather than the chat model?",
+        "options": [
+          "Chat models legally cannot produce vectors",
+          "Dedicated embedding models are trained specifically to map similar meanings to nearby vectors, and run much faster and cheaper",
+          "Embeddings require GPUs while chat models do not",
+          "They aren't — the chat model produces embeddings as a side effect of every reply"
+        ],
+        "answer": [1],
+        "explanation": "Embedding models are purpose-trained (often with contrastive objectives) for semantic similarity, and they're small and cheap — you can embed millions of documents. Chat models optimize for generation, not for a well-structured similarity space."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "Your product takes off in Japan and costs triple the forecast. The most likely cause?",
+        "options": [
+          "Japanese users send more messages",
+          "Japanese text tokenizes into 2–4× more tokens than equivalent English, raising per-request cost",
+          "The API charges extra for non-ASCII characters",
+          "Time-zone-based pricing"
+        ],
+        "answer": [1],
+        "explanation": "Tokenizer vocabularies are dominated by English; many other languages require several tokens per word. Same content, multiple times the tokens — a classic internationalization cost surprise."
+      },
+      {
+        "id": "r7",
+        "type": "single",
+        "prompt": "Which task is the WORST fit for an LLM without tools?",
+        "options": [
+          "Summarizing a meeting transcript",
+          "Computing the exact sum of 47 floating-point invoice amounts",
+          "Drafting a polite reply to a customer",
+          "Translating a paragraph to French"
+        ],
+        "answer": [1],
+        "explanation": "Exact arithmetic over many values is token-level pattern matching at its weakest — the model will be confidently close-but-wrong. The fix is tool calling (Module 3): let the model call a calculator/code, not do the math in text."
+      },
+      {
+        "id": "r8",
+        "type": "single",
+        "prompt": "What's the main reason to keep a task-specific eval set even after launch?",
+        "options": [
+          "Regulators require eval sets for all AI products",
+          "It lets you safely adopt new/cheaper models and catch regressions when anything changes — prompts, models, or providers",
+          "It improves the model's weights over time",
+          "It reduces token costs directly"
+        ],
+        "answer": [1],
+        "explanation": "Models update, prices drop, and new releases arrive monthly. An eval set turns 'should we switch?' from a leap of faith into an afternoon's measurement — and catches silent regressions. Module 7 is dedicated to this."
+      }
+    ]
+  }
+}
