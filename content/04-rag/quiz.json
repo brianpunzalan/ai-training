@@ -1,0 +1,338 @@
+{
+  "why-rag": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What does RAG fundamentally change about how a model answers questions?",
+        "options": [
+          "It fine-tunes the model on your documents before answering",
+          "It fetches relevant text at request time so the model answers as a grounded reader rather than from its weights",
+          "It increases the model's context window",
+          "It caches previous answers for reuse"
+        ],
+        "answer": [1],
+        "explanation": "RAG retrieves relevant passages and places them in the prompt, turning the task from 'recall from training' into 'read and answer from this text.' That buys freshness, private-data access, citations, and access control — none of which weights can provide."
+      },
+      {
+        "id": "q2",
+        "type": "multi",
+        "prompt": "Why don't huge context windows make RAG obsolete? (Select all that apply.)",
+        "options": [
+          "Cost and latency scale with tokens sent per request",
+          "Real corpora outgrow any context window",
+          "Attention degrades over long, noisy contexts ('lost in the middle')",
+          "Long-context models refuse documents over 100 pages"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Even when everything fits, you pay for every token every request, and recall degrades across long noisy contexts. And most corpora simply don't fit. The 2026 default is a hybrid: retrieve the relevant documents, then include them generously."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "When does long context beat RAG?",
+        "options": [
+          "Small corpora and whole-document analysis tasks",
+          "Large, frequently changing corpora",
+          "Multi-tenant corpora with per-user access control",
+          "Any corpus over a million documents"
+        ],
+        "answer": [0],
+        "explanation": "If the whole corpus is a handful of documents, or the task requires reasoning over an entire document (summarize this contract), just sending the text beats building retrieval. RAG wins when corpora are large, changing, or access-controlled."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Which statement about RAG and hallucination is accurate?",
+        "options": [
+          "RAG eliminates hallucination by construction",
+          "RAG reduces hallucination, but faithfulness must still be measured — the model can contradict or embellish retrieved text",
+          "RAG increases hallucination by adding noise to prompts",
+          "Hallucination is only a concern for non-RAG systems"
+        ],
+        "answer": [1],
+        "explanation": "Grounding helps a lot, but models can still answer from weights when retrieval misses, or embellish beyond what sources say. That's why faithfulness evaluation (Lesson 6) exists — and why retrieval, the usual weakest link, gets most of the engineering attention."
+      }
+    ]
+  },
+  "chunking": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why is chunking so consequential for RAG quality?",
+        "options": [
+          "It determines the unit of retrieval — what can be found and what context comes with it — capping the whole pipeline's quality",
+          "It's the only stage that uses an LLM",
+          "Vector databases bill per chunk",
+          "Chunking determines which embedding model you can use"
+        ],
+        "answer": [0],
+        "explanation": "Retrieval returns chunks, so the chunk is both the findable unit and the context the model reads. Bad splits bury answers across boundaries or blur embeddings — and no amount of downstream reranking or prompting can recover information chunking destroyed."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What problem does parent-document (small-to-big) retrieval solve?",
+        "options": [
+          "Small chunks match queries precisely but lack answering context — so you retrieve by small chunk and hand the model the larger parent section",
+          "Large documents exceed embedding model input limits",
+          "Vector databases can't store documents over 1MB",
+          "It removes the need for overlap between chunks"
+        ],
+        "answer": [0],
+        "explanation": "Precision wants small chunks; generation wants surrounding context. Small-to-big decouples them: index small chunks for matching, but expand to the parent section when assembling the prompt — precise findability and rich context at once."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which chunking practices does the lesson recommend? (Select all that apply.)",
+        "options": [
+          "Recursive splitting at roughly 300–800 tokens with 10–20% overlap as a default",
+          "Structure-aware chunking when documents have headings and sections",
+          "Prepending contextual headers (title + heading path) to each chunk",
+          "Splitting at exactly 512 tokens with no overlap for all document types"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Recursive splitting with overlap is the sane default, structure-aware splitting exploits document organization, and contextual headers cheaply restore the document-level meaning chunks lose. A single rigid size for all content types ignores how differently prose, code, and tables behave."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "How should chunk size and strategy ultimately be chosen?",
+        "options": [
+          "By eyeballing outputs on a few familiar queries",
+          "By measuring against a retrieval eval set and picking the configuration that scores best",
+          "Always the largest size the embedding model accepts",
+          "By matching whatever the vector database vendor recommends"
+        ],
+        "answer": [1],
+        "explanation": "Chunking has real, measurable trade-offs that vary by corpus. The retrieval metrics from Lesson 6 (recall@k, MRR) run fast and LLM-free, making parameter sweeps cheap — so tune with data, never by anecdote."
+      }
+    ]
+  },
+  "vector-databases": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is the core operation of vector search at query time?",
+        "options": [
+          "Embed the query with the same model used for the corpus, then rank stored chunk vectors by cosine similarity",
+          "Compare the query string to chunks with edit distance",
+          "Ask an LLM to scan every chunk for relevance",
+          "Match the query against pre-computed keyword indexes only"
+        ],
+        "answer": [0],
+        "explanation": "The query is embedded into the same vector space as the corpus — same model, critically — and nearest neighbors by cosine similarity (a dot product for normalized vectors) are the candidate chunks. Mixing embedding models between corpus and query silently breaks everything."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What trade-off do ANN indexes like HNSW make?",
+        "options": [
+          "They return ~95–99% of true nearest neighbors in milliseconds instead of exact results in seconds — so retrieval can miss",
+          "They use more memory in exchange for perfect recall",
+          "They only work on corpora under 100k vectors",
+          "They trade write speed for exact reads"
+        ],
+        "answer": [0],
+        "explanation": "Exact nearest-neighbor search scans everything and dies at scale. HNSW navigates a graph to find approximate neighbors fast — but 'approximate' means the true best chunk is occasionally skipped, and parameters like ef_search tune that recall/speed balance."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "When is pgvector the right vector store choice?",
+        "options": [
+          "Only for corpora under 1,000 documents",
+          "When you already run Postgres — you get vectors, metadata filtering, and transactions without new infrastructure",
+          "Never — dedicated vector databases are always superior",
+          "Only when you don't need metadata filtering"
+        ],
+        "answer": [1],
+        "explanation": "If Postgres is already in your stack, pgvector adds vector search next to your existing data, with SQL filtering and transactional updates — operationally free. Dedicated vector DBs earn their keep at large scale or specialized performance needs."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Why is metadata a first-class concern in a vector store? (Select all that apply.)",
+        "options": [
+          "Filtering by tenant or access tags is a security boundary in multi-tenant systems",
+          "Source and heading metadata powers citations",
+          "The stored embedding model name is needed when you eventually re-embed",
+          "Metadata makes ANN search exact instead of approximate"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Tenant filters are access control — failures leak data across customers. Source metadata renders citations, and recording the embedding model is what makes future re-embedding tractable. Metadata doesn't change ANN's approximate nature; you should however know whether your store filters during or after traversal."
+      }
+    ]
+  },
+  "hybrid-search-reranking": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why does pure vector search struggle with queries like 'error 0x80070057'?",
+        "options": [
+          "Error codes are filtered out by embedding APIs",
+          "Embeddings compress text into a fixed vector, blurring rare exact identifiers that keyword search like BM25 matches precisely",
+          "Vector search can't handle queries shorter than ten words",
+          "Hexadecimal strings can't be tokenized"
+        ],
+        "answer": [1],
+        "explanation": "Embedding models capture meaning, and rare identifiers, SKUs, and version strings lose their exact identity in the compression. BM25 scores exact term overlap — weighted toward rare terms — so it nails identifier queries while missing paraphrase. Production needs both: hybrid search."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "How does reciprocal rank fusion (RRF) combine dense and BM25 results?",
+        "options": [
+          "It averages the cosine and BM25 scores after normalizing them",
+          "It sums 1/(k + rank) across lists, combining ranks rather than incomparable scores",
+          "It takes the union and orders by recency",
+          "It trains a small model to weigh the two lists"
+        ],
+        "answer": [1],
+        "explanation": "Cosine similarities and BM25 scores live on different scales, so RRF ignores scores entirely and works on ranks: each list contributes 1/(k + rank) per document, with k≈60. No normalization, no tuning, no training — which is why it's the default fusion method."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "What can a cross-encoder reranker do that bi-encoder retrieval cannot?",
+        "options": [
+          "Search millions of chunks in milliseconds",
+          "Read the query and chunk together in one input, letting attention compare their actual words for a more accurate relevance score",
+          "Generate the final answer with citations",
+          "Embed documents without a model"
+        ],
+        "answer": [1],
+        "explanation": "Bi-encoders embed query and document separately — fast, but the model never sees them together. A cross-encoder scores the (query, chunk) pair jointly, which is far more accurate and far too slow for the whole corpus — hence the funnel: retrieve wide, rerank the top ~100, keep 5–10."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "When should you add hybrid search or a reranker, per the lesson? (Select all that apply.)",
+        "options": [
+          "Add BM25 + RRF when failure analysis shows missed exact-match queries",
+          "Add a reranker when recall@50 is high but the right chunk rarely makes the top 5",
+          "Build the full stack on day one regardless of measurements",
+          "Let retrieval evals motivate each added stage"
+        ],
+        "answer": [0, 1, 3],
+        "explanation": "Each stage answers a measured failure: hybrid fixes missed identifiers; reranking fixes 'retrieved but ranked too low.' Starting dense-only and adding stages based on eval evidence keeps complexity proportional to need — architecture-diagram envy is not a reason."
+      }
+    ]
+  },
+  "rag-pipeline": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why think of RAG as two pipelines rather than one?",
+        "options": [
+          "Ingestion (offline) and query (online) run on different schedules, fail differently, and are tuned with different evals",
+          "Providers bill ingestion and query separately",
+          "Two pipelines are required for redundancy",
+          "One pipeline handles text and the other handles images"
+        ],
+        "answer": [0],
+        "explanation": "Ingestion runs when documents change; query runs per request. Treating them separately prevents the classic mistake of debugging generation when the actual failure happened at ingestion — a bad chunk written weeks ago."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What is the single highest-leverage line in a RAG prompt?",
+        "options": [
+          "A request for bullet-point formatting",
+          "The grounding instruction with an escape hatch: answer only from sources, and say 'not found' when they don't contain the answer",
+          "A reminder that the model is a helpful assistant",
+          "The current date and time"
+        ],
+        "answer": [1],
+        "explanation": "Without the grounding rule and the explicit not-found action, the model fills retrieval gaps from its weights — exactly the hallucination RAG exists to prevent. Delimited, labeled sources and per-claim citations complete the pattern."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which unhappy-path policies does the lesson prescribe? (Select all that apply.)",
+        "options": [
+          "When all retrieval scores are low, skip generation and say 'not found' rather than prompting with junk",
+          "Rewrite conversational follow-up questions using chat history before embedding",
+          "If the index is down, silently fall back to answering without sources",
+          "When sources conflict, surface the conflict and prefer the most recent source"
+        ],
+        "answer": [0, 1, 3],
+        "explanation": "Junk context produces confident junk answers; follow-ups like 'what about for teams?' embed poorly without rewriting; conflicts should be surfaced using metadata recency. Silently dropping grounding is the one unacceptable option — fail explicitly instead."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Why must ingestion be idempotent and incremental, with deletion of stale chunks?",
+        "options": [
+          "Vector databases corrupt indexes on duplicate writes",
+          "Otherwise removed or updated documents leave stale chunks the model will confidently cite — like a policy you retired last quarter",
+          "Embedding APIs reject previously seen text",
+          "Incremental ingestion is required for citations to work"
+        ],
+        "answer": [1],
+        "explanation": "Hash sources, re-process only changes, and delete chunks of removed documents. Stale chunks are an embarrassing failure mode: retrieval happily serves them, and the model grounds its answer in text that is no longer true."
+      }
+    ]
+  },
+  "evaluating-rag": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why evaluate retrieval and generation separately?",
+        "options": [
+          "End-to-end scores can't tell you which component failed, and the fixes are completely different",
+          "Providers require separate eval reports",
+          "Generation can't be evaluated at all",
+          "Retrieval metrics require an LLM judge"
+        ],
+        "answer": [0],
+        "explanation": "A bad answer can come from wrong chunks or from bad generation over right chunks. Re-chunking and re-prompting are entirely different fixes, so you need component-level measurements to know which lever to pull."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "Why is recall@k called the 'ceiling' metric for RAG?",
+        "options": [
+          "It's the highest-scoring metric in most systems",
+          "If the right chunk isn't in the top k results, nothing downstream — reranking or prompting — can save the answer",
+          "It measures the maximum tokens that fit in context",
+          "It can only decrease as the corpus grows"
+        ],
+        "answer": [1],
+        "explanation": "Generation reads what retrieval provides. Track recall@5 (what makes the prompt) and recall@50 (what reaches the reranker): high recall@50 with low recall@5 says ranking is the problem; low recall@50 says retrieval itself is missing — fix chunking or add hybrid."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which metrics form the RAGAS-style generation triad? (Select all that apply.)",
+        "options": [
+          "Faithfulness — every claim in the answer is supported by retrieved context",
+          "Answer relevance — the answer addresses the question asked",
+          "Context relevance — the retrieved context was actually needed",
+          "Perplexity of the generated answer"
+        ],
+        "answer": [0, 1, 2],
+        "explanation": "Faithfulness catches hallucination on top of good retrieval (the metric RAG exists for), answer relevance catches evasive answers, and context relevance catches bloated retrieval. Perplexity tells you none of this. Faithfulness is measured by checking decomposed claims against chunks — an LLM-as-judge task (Module 7)."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "What's the main caveat with synthetically generated eval questions?",
+        "options": [
+          "Synthetic questions are illegal to use in evaluations",
+          "They tend to echo the chunk's vocabulary, inflating retrieval scores versus real paraphrased queries — so rewrite a sample naturally and human-verify",
+          "LLMs refuse to generate questions about documents",
+          "They can only be used for generation metrics, not retrieval"
+        ],
+        "answer": [1],
+        "explanation": "An LLM asked to write questions from a chunk reuses its words, making retrieval look better than it is against real users who paraphrase. Rewriting into natural phrasing and verifying a sample keeps the eval honest — and harvesting real production failures keeps it growing where it matters."
+      }
+    ]
+  }
+}
