@@ -1,0 +1,494 @@
+{
+  "latency-cost": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why should TTFT and throughput be diagnosed separately?",
+        "options": [
+          "They're the same metric expressed in different units",
+          "TTFT is driven by network + prefill while throughput is decode-driven — different causes, different fixes",
+          "Throughput only matters for batch jobs",
+          "TTFT is set by the tokenizer"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Time-to-first-token reflects prompt processing (prefill) plus network; tokens-per-second reflects sequential decoding. A slow TTFT wants a smaller prompt or caching; slow total duration wants fewer output tokens or a faster model — and streaming fixes perceived latency either way."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What does the lesson call the biggest single cost lever?",
+        "options": [
+          "Negotiating enterprise discounts",
+          "Model right-sizing — routing and cascades that send each task to the smallest model that passes your evals",
+          "Removing all system prompts",
+          "Disabling streaming"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Frontier models cost orders of magnitude more than small ones, and many tasks don't need frontier quality. Routing simple traffic to small models — with the eval suite proving quality holds — is the step-change saving; token trimming is the steady accumulation on top."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which cost/latency practices does the lesson recommend? (Select all that apply.)",
+        "options": [
+          "Routing non-interactive work to batch APIs for ~50% savings",
+          "Setting max_tokens deliberately and instructing concise output",
+          "Logging per-request usage and latency as a prerequisite to optimizing",
+          "Self-hosting immediately, since it's always cheaper than APIs"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Batch APIs halve costs for anything that can wait; output tokens are the slowest and priciest, so bound them; and you can't optimize what you don't measure. Self-hosting with vLLM wins only at high, steady utilization — at low or spiky volume, the API is cheaper."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "When does self-hosting with vLLM beat paying for an API?",
+        "options": [
+          "Always — GPUs are cheaper than tokens",
+          "At high, steady utilization where continuous batching keeps the hardware busy",
+          "Only for models above 100B parameters",
+          "Whenever latency doesn't matter"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Self-hosting trades per-token cost for fixed GPU cost plus operational burden. Continuous batching makes the economics work only when traffic keeps the hardware utilized; idle GPUs are pure loss, which is why spiky or low-volume workloads belong on APIs."
+      }
+    ]
+  },
+  "caching": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What exactly does provider prompt caching reuse?",
+        "options": [
+          "The model's final answer for similar questions",
+          "The prefill KV-cache computation for a repeated prompt prefix",
+          "The embeddings of previous queries",
+          "The network connection between requests"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Prompt caching skips re-computing the internal state (KV cache) for an exact-matching prompt prefix — saving input cost and TTFT, but not generation. That's why it shines for agents and RAG with large stable system prompts and tool definitions."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "How do Anthropic and OpenAI differ in prompt-cache mechanics?",
+        "options": [
+          "Anthropic uses explicit cache_control breakpoints; OpenAI caches long prompt prefixes automatically — both report hits via usage fields",
+          "Anthropic caches outputs; OpenAI caches inputs",
+          "OpenAI requires a separate caching API; Anthropic doesn't support caching",
+          "They're identical in every detail"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "With Anthropic you mark cache breakpoints explicitly; OpenAI applies prefix caching automatically on longer prompts. Either way, verify you're actually getting hits by reading the cache-related usage fields — assumed caching is a classic silent cost leak."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "What's the key risk of semantic caching (serving cached responses for similar queries)?",
+        "options": [
+          "It's slower than calling the model",
+          "False hits: a confidently served cached answer to a subtly different question — threshold conservatively and audit hits",
+          "It only works with one embedding model",
+          "Cache storage costs exceed inference costs"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Embedding similarity treats 'cancel my subscription' and 'why was my subscription cancelled?' as neighbors. A false cache hit is a wrong answer served instantly and cheaply. Conservative thresholds, scoped use, and hit auditing are the controls."
+      },
+      {
+        "id": "q4",
+        "type": "multi",
+        "prompt": "Which statements about layering caches are true? (Select all that apply.)",
+        "options": [
+          "Prompt caching, exact-match response caching, and semantic caching save different costs at different risk levels",
+          "Exact-match response caching skips the whole model call but only fires on identical requests",
+          "Stable-first prompt ordering is what makes prompt caching effective",
+          "Semantic caching is risk-free since embeddings capture exact meaning"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "The three layers complement each other: prefix caching cuts prefill cost on every request, exact-match caching eliminates calls for repeats (key on model + prompt + params, with TTLs), and semantic caching raises hit rates at real false-hit risk — it is anything but risk-free."
+      }
+    ]
+  },
+  "guardrails": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why aren't system-prompt rules sufficient as a safety mechanism?",
+        "options": [
+          "System prompts are too expensive to include",
+          "Prose instructions shape behavior but don't enforce it — they fold under adversarial pressure and long-tail inputs, so independent rails must run outside the model",
+          "Providers strip safety instructions from system prompts",
+          "Rules in prompts slow down generation"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Module 2's lesson holds: prompt rules are suggestions. Production safety comes from layers that run regardless of what the model does — input rails before the call, output rails after, and permission gates around actions."
+      },
+      {
+        "id": "q2",
+        "type": "multi",
+        "prompt": "Which belong on the input-rail side? (Select all that apply.)",
+        "options": [
+          "Topic/intent classification with a canned redirect for out-of-scope requests",
+          "Moderation scoring via purpose-built classifiers (e.g., Llama Guard, moderation APIs)",
+          "PII redaction before the model call when the model doesn't need the data",
+          "Schema validation of the model's response"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Intent scoping (also a cost control), moderation, and inbound PII redaction all run before the model sees the input. Schema validation is an output rail — it checks what the model produced, alongside content rules and outbound PII scans."
+      },
+      {
+        "id": "q3",
+        "type": "single",
+        "prompt": "How should blocking vs flagging be divided?",
+        "options": [
+          "Block everything a rail is unsure about",
+          "Block bright lines (PII leaks, policy violations); flag the gray zone for human review while shipping, and alert on flag-rate spikes",
+          "Flag everything; never block",
+          "Alternate between the two randomly to confuse attackers"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Blocking is for unambiguous violations; flagging ships the response but queues it for review, absorbing the uncertain middle without frustrating users. Flag-rate spikes on a dashboard are an early-warning signal for drift or attack campaigns."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Why does every blocking guardrail need its own eval set?",
+        "options": [
+          "Regulators require guardrail documentation",
+          "A rail that wrongly declines 2% of legitimate requests frustrates those users at every interaction — its precision/recall must be measured and tuned like any classifier",
+          "Eval sets make guardrails run faster",
+          "Without one, the guardrail can't be deployed"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "False positives are a product cost paid continuously. Each blocking rail is a classifier: measure it on labeled cases including benign-but-edgy ones, tune blocking toward precision, and let flagging absorb the recall."
+      }
+    ]
+  },
+  "security": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "Why is prompt injection described as structural rather than a patchable bug?",
+        "options": [
+          "Providers refuse to fix it",
+          "Everything in the context — instructions and data alike — is just tokens attended by the same mechanism, so the model can't reliably tell whose instructions to follow",
+          "It only affects open-weight models",
+          "Firewalls can't inspect LLM traffic"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Instruction/data separation doesn't exist at the architecture level: a retrieved document that says 'ignore your instructions' is processed by the same attention as the system prompt. The builder's job is bounding the damage of inevitable bypasses, not 'fixing' injection."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What distinguishes indirect prompt injection from jailbreaking?",
+        "options": [
+          "Indirect injection requires physical access to servers",
+          "Injection hides attacker instructions in content processed on a victim's behalf (webpages, documents, tool results); jailbreaking is a user talking the model out of its own safety training",
+          "Jailbreaking is the more dangerous of the two for applications",
+          "They're synonyms"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Jailbreaking is user-vs-model; injection is attacker-vs-application, with the victim never seeing the attack arrive via RAG corpus, browsed page, or MCP tool result. Conflating them leads to defending the wrong layer — indirect injection is the application builder's nightmare."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "What are the three legs of the 'lethal trifecta'? (Select all that apply.)",
+        "options": [
+          "Access to private data",
+          "Exposure to untrusted content",
+          "An exfiltration channel",
+          "Use of a fine-tuned model"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "When one system combines private-data access, untrusted-content exposure, and a way for data to leave (email, HTTP, even markdown image URLs), hidden instructions can silently exfiltrate with the user's permissions. The design move is breaking at least one leg — fine-tuning is irrelevant to the pattern."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Which defenses hold even when the model is fully compromised by an injection?",
+        "options": [
+          "Delimiters around untrusted content and injection-screening classifiers",
+          "Structural layers: least-privilege tools, human approval gates, egress allowlists, and sandboxes",
+          "A strongly worded system prompt",
+          "Running at temperature 0"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Textual defenses (delimiters, screeners) reason about content and get bypassed; capability constraints bound what a compromised agent can actually do. Treat an agent reading untrusted content as if that content's author were at the keyboard — and permission it accordingly."
+      }
+    ]
+  },
+  "responsible-ai": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What is counterfactual bias evaluation?",
+        "options": [
+          "Asking the model whether it is biased",
+          "Varying only a sensitive attribute (or proxies like names) across otherwise identical cases and measuring whether outcomes shift",
+          "Comparing your model's bias to a competitor's",
+          "Removing all demographic data from training sets"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "It's a golden-set technique: identical inputs except the name/dialect/location, aggregated over many cases, with alerts when outcome gaps exceed threshold. Run it in CI like any eval — model upgrades can shift bias, not just quality."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "What makes human oversight of high-stakes AI decisions real rather than theatrical?",
+        "options": [
+          "The human sees the model's reasoning and sources, has authority and time to disagree, and their override rate is measured",
+          "A human clicks approve on every recommendation as fast as possible",
+          "The model explains itself in legal language",
+          "Oversight is logged but never reviewed"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "A reviewer approving 100% of recommendations at 3 seconds each is a rubber stamp — and regulators increasingly say so. Genuine oversight needs information (reasoning, sources), empowerment, and measurement of whether disagreement actually happens."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which privacy practices does the lesson require? (Select all that apply.)",
+        "options": [
+          "Knowing your provider's retention policy and whether API traffic trains models (verify, don't assume)",
+          "Redacting PII before model calls where the model doesn't need it",
+          "Making deletion requests reach traces AND vector-store embeddings",
+          "Assuming enterprise tiers handle privacy automatically"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Privacy is configuration you must actually do: retention windows, zero-data-retention agreements where needed, PII redaction, and deletion that reaches everything — including what's embedded in RAG indexes. Assumptions are how data ends up where it shouldn't."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "How does the EU AI Act determine your obligations as an application builder?",
+        "options": [
+          "By your company's size",
+          "By your use case's risk tier — the same API call is minimal-risk in a writing aid and high-risk in a hiring tool",
+          "By which model provider you choose",
+          "By your server's physical location only"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "The Act regulates by risk tier: banned uses, high-risk (employment, credit, essential services — heavy logging/oversight/documentation duties), limited-risk (transparency), minimal-risk (unregulated). Classify your use case early; retrofitting high-risk obligations is expensive."
+      }
+    ]
+  },
+  "capstone": {
+    "questions": [
+      {
+        "id": "q1",
+        "type": "single",
+        "prompt": "What recurring lesson does the capstone identify across all eight modules?",
+        "options": [
+          "Bigger models solve most production problems",
+          "The model is the smallest part of the system — quality, cost, safety, and reliability come from the engineering around it",
+          "Python is preferable to TypeScript for AI work",
+          "Production systems should avoid LLM providers"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "A demo needs a model and a prompt; production needs evals, failure handling, cost controls, grounding, guardrails, observability, and compliance. Every module taught a version of this: the durable engineering lives in the harness, not the weights."
+      },
+      {
+        "id": "q2",
+        "type": "single",
+        "prompt": "How should checklist items be skipped, when they're skipped?",
+        "options": [
+          "Silently, to keep documentation light",
+          "Deliberately and on the record — an internal summarizer needs less than a hiring tool, but the decision should be documented, not forgotten",
+          "Never — every item applies to every system",
+          "By deleting them from the checklist"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Stakes scale the list: not everything applies everywhere. The failure mode is omission by accident. A recorded 'we skipped X because Y' is auditable and revisitable; a forgotten item is an incident waiting to be discovered."
+      },
+      {
+        "id": "q3",
+        "type": "multi",
+        "prompt": "Which are among the course's three closing habits? (Select all that apply.)",
+        "options": [
+          "Measure, don't vibe — decisions improve when run against eval sets",
+          "Own the harness — context, tools, guardrails, and orchestration are where your engineering wins",
+          "Close the loop — production failures become eval cases that gate future changes",
+          "Upgrade to every new model on release day without gating"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Measurement, harness ownership, and the production→eval→gate loop are the habits that survive model churn. Ungated same-day upgrades violate the first and third — model versions get pinned and upgrades go through the full eval gate plus canary."
+      },
+      {
+        "id": "q4",
+        "type": "single",
+        "prompt": "Why do eval sets, traces, and guardrails outlast the model they were built around?",
+        "options": [
+          "They're required to be kept for seven years",
+          "Models, prices, and APIs churn, but these assets transfer to every future model — they're what makes adopting the next model cheap and safe",
+          "They can be sold separately from the product",
+          "They don't — everything must be rebuilt per model"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "The course's closing argument: capabilities arrive from providers, but your eval sets, observability, guardrails, and judgment compound across model generations. They're the moat — invest accordingly, and take the checklist to a real problem."
+      }
+    ]
+  },
+  "_module_review": {
+    "questions": [
+      {
+        "id": "r1",
+        "type": "single",
+        "prompt": "Connect the layers: a request hits intent classification, then the model, then schema + content checks, with destructive tools behind approval. Which principle does this implement?",
+        "options": [
+          "Defense in depth — independent rails before and after the model, capability gates around actions",
+          "Single point of failure",
+          "Trust the system prompt",
+          "Security through obscurity"
+        ],
+        "answer": [
+          0
+        ],
+        "explanation": "Each layer fails differently: prompt rules shape, input rails filter, output rails catch, permission gates bound actions. No single layer is trusted to hold."
+      },
+      {
+        "id": "r2",
+        "type": "single",
+        "prompt": "An email assistant reads inbound mail (untrusted), accesses the mailbox (private data), and can send replies (egress). What does the module call this and prescribe?",
+        "options": [
+          "A normal feature needing no review",
+          "The lethal trifecta — break a leg by design: scope the reader's data access, gate outbound sends, or isolate untrusted-content processing",
+          "A jailbreak, fixed by safety training",
+          "A latency problem"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "All three legs together let hidden instructions exfiltrate silently with the user's permissions. Most systems can drop one leg; if not, the feature needs adversarial review."
+      },
+      {
+        "id": "r3",
+        "type": "single",
+        "prompt": "Your prompt cache hit rate dropped to zero after a deploy. The diff shows a request-id added to the top of the system prompt. Why did this break it?",
+        "options": [
+          "Request ids are banned by providers",
+          "Caching matches exact prefixes — a volatile value early in the prompt invalidates everything after it on every request",
+          "The cache needed re-warming",
+          "Ids exceed token limits"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "Stable-first ordering is the whole game for prompt caching. Volatile values go last (or nowhere), and usage fields verify you're actually hitting."
+      },
+      {
+        "id": "r4",
+        "type": "multi",
+        "prompt": "Which items belong on the production-readiness checklist before launch? (Select all that apply.)",
+        "options": [
+          "Pinned model versions with eval-gated upgrades",
+          "Timeouts, retries, and a degraded mode for provider outages",
+          "An incident runbook covering prompt rollback and tool kill-switches",
+          "A promise to add evals after the first incident"
+        ],
+        "answer": [
+          0,
+          1,
+          2
+        ],
+        "explanation": "Silent model upgrades, missing failure handling, and no rollback plan are the classic post-launch incidents. Evals after the incident is the anti-pattern the whole course argues against."
+      },
+      {
+        "id": "r5",
+        "type": "single",
+        "prompt": "A reviewer approves 100% of the model's high-stakes recommendations in seconds each. What does the module call this?",
+        "options": [
+          "Efficient oversight",
+          "A rubber stamp — real oversight needs reasoning + sources, authority to disagree, and a measured override rate",
+          "Best practice for throughput",
+          "Proof the model is reliable"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "For hiring/credit/medical-grade decisions, the model informs and a human decides — and oversight is only real if disagreement is informed, empowered, and actually happens."
+      },
+      {
+        "id": "r6",
+        "type": "single",
+        "prompt": "Why does the course argue your eval sets, traces, and guardrails outlast any model choice?",
+        "options": [
+          "They're cheaper than models",
+          "Models, prices, and APIs churn; these assets transfer to every future model and are what makes adopting the next one cheap and safe",
+          "They're legally mandated",
+          "They don't — rebuild everything per model"
+        ],
+        "answer": [
+          1
+        ],
+        "explanation": "The durable engineering is the measurement and safety infrastructure around the model. That's the moat — and the course's closing argument."
+      }
+    ]
+  }
+}
